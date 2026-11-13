@@ -194,13 +194,13 @@
       var bp = titreEl.querySelector('.titre__pasToi'); if (bp) bp.onclick = ouvrirAccueil;
       var br = titreEl.querySelector('.titre__reviser'); if (br) br.onclick = entrerRevision;
       reveler(titreEl.querySelectorAll('.titre__h, .titre__acc'), 0.35);
-      dire(O.nu(p.ch.titre) + '. ' + O.nu(p.ch.accroche));
+      dire(O.Voix.titre(p.ch));
       if (!reduit) gsap.from(titreEl.querySelectorAll('.titre__sur, .titre__inv, .titre__actions, .titre__pasToi'), { opacity: 0, y: 14, duration: 0.8, delay: 0.25, stagger: 0.25 });
     } else if (p.type === 'texte') {
       var t = fmt(p.t).replace(/^Œil de lynx : /, '<span class="lynx">Œil de lynx</span>');
       legende.innerHTML = '<p>' + t + '</p>' + (m.note ? '<p class="legende__note">' + fmt(C.ui[m.note]) + '</p>' : '');
       reveler(legende.querySelector('p'), 0.2);
-      dire(O.nu(p.t).replace(/^Œil de lynx : /, 'Œil de lynx ! '));
+      dire(O.Voix.texte(p.t));
       if (m.note && !reduit) gsap.from(legende.querySelector('.legende__note'), { opacity: 0, duration: 0.8, delay: 1.1 });
     }
   }
@@ -429,8 +429,11 @@
 
   /* ---------- 13. Lecture à voix haute ----------
      Un seul bouton : allumé, il lit le passage en cours, puis chaque nouveau passage.
-     La voix est celle de l'appareil (aucun service extérieur). */
+     Chaque texte a son enregistrement (medias/voix/<clé>.mp3, liste dans js/voix.js).
+     Un texte sans enregistrement est lu par la voix de l'appareil. */
   var bVoix = $('#voix'), synth = window.speechSynthesis, voixFr = null, voixOn = false;
+  var FICHIERS = window.VOIX_FICHIERS || {}, lecteur = new Audio(), file = [], tour = 0;
+  lecteur.preload = 'auto';
   function choisirVoix() {
     var l = synth.getVoices().filter(function (v) { return /^fr([-_]|$)/i.test(v.lang); });
     // les voix les plus naturelles d'abord : neuronales (Edge), premium ou améliorées (Apple), Google (Chrome)
@@ -446,37 +449,60 @@
     l.sort(function (a, b) { return note(b) - note(a); });
     voixFr = l[0] || null;
   }
-  function dire(texte) {
-    if (!voixOn || !synth || !texte) return;
-    synth.cancel();
+  function taire() {
+    tour++; file = [];
+    try { lecteur.pause(); } catch (e) { /* rien */ }
+    if (synth) synth.cancel();
+    bVoix.classList.remove('parle');
+  }
+  // morceaux : une liste de textes, lus l'un après l'autre
+  function dire(morceaux) {
+    if (!voixOn) return;
+    taire();
+    file = [].concat(morceaux || []).filter(Boolean);
+    suivant(tour);
+  }
+  function suivant(t) {
+    if (t !== tour) return;
+    if (!file.length) { bVoix.classList.remove('parle'); return; }
+    var texte = file.shift(), cle = O.Voix.cle(texte);
+    bVoix.classList.add('parle');
+    if (FICHIERS[cle]) {
+      lecteur.onended = function () { suivant(t); };
+      lecteur.onerror = function () { parlerAppareil(texte, t); };
+      lecteur.src = 'medias/voix/' + cle + '.mp3';
+      var pr = lecteur.play(); if (pr && pr.catch) pr.catch(function () { if (t === tour) bVoix.classList.remove('parle'); });
+    } else parlerAppareil(texte, t);
+  }
+  function parlerAppareil(texte, t) {
+    if (!synth || !window.SpeechSynthesisUtterance) { suivant(t); return; }
     var u = new window.SpeechSynthesisUtterance(String(texte).replace(/[«»]/g, ''));
     u.lang = 'fr-FR'; if (voixFr) u.voice = voixFr; u.rate = 0.92;
-    u.onstart = function () { bVoix.classList.add('parle'); };
-    u.onend = u.onerror = function () { bVoix.classList.remove('parle'); };
+    u.onend = u.onerror = function () { suivant(t); };
     synth.speak(u);
   }
   function texteEnCours() {
-    if (courant < 0) return '';
+    if (courant < 0) return [];
     var p = PAS[courant];
-    if (p.type === 'texte') return O.nu(p.t);
-    if (p.type === 'titre') return O.nu(p.ch.titre) + '. ' + O.nu(p.ch.accroche);
-    return defiOuvert ? defiOuvert.aLire() : '';
+    if (p.type === 'texte') return O.Voix.texte(p.t);
+    if (p.type === 'titre') return O.Voix.titre(p.ch);
+    return defiOuvert ? defiOuvert.aLire() : [];
   }
   function majVoix() {
     bVoix.setAttribute('aria-pressed', String(voixOn));
     bVoix.setAttribute('aria-label', voixOn ? C.ui.voixOff : C.ui.voix);
     bVoix.title = voixOn ? C.ui.voixOff : C.ui.voix;
   }
-  if (synth && window.SpeechSynthesisUtterance) {
-    choisirVoix(); if (synth.addEventListener) synth.addEventListener('voiceschanged', choisirVoix);
+  if (synth && window.SpeechSynthesisUtterance) { choisirVoix(); if (synth.addEventListener) synth.addEventListener('voiceschanged', choisirVoix); }
+  if (Object.keys(FICHIERS).length || (synth && window.SpeechSynthesisUtterance)) {
     try { voixOn = localStorage.getItem('moyen-age-voix') === '1'; } catch (e) { /* rien */ }
     bVoix.hidden = false; majVoix();
     bVoix.onclick = function () {
       voixOn = !voixOn; majVoix();
       try { localStorage.setItem('moyen-age-voix', voixOn ? '1' : '0'); } catch (e) { /* rien */ }
-      if (voixOn) dire(texteEnCours()); else { synth.cancel(); bVoix.classList.remove('parle'); }
+      if (voixOn) dire(texteEnCours()); else taire();
     };
-    window.addEventListener('pagehide', function () { synth.cancel(); });
+    window.addEventListener('pagehide', taire);
   }
 
   /* ---------- 14. Mode révision : les défis seulement ---------- */

@@ -123,5 +123,34 @@
     return e;
   }
 
-  window.Outils = { fmt: fmt, perso: perso, Enfant: Enfant, nu: nu, gabarit: gabarit, norm: norm, juger: juger, distance: distance, Progres: Progres, el: el };
+  /* ---------- La voix enregistrée : chaque texte lu a sa clé ----------
+     Les mêmes fonctions servent au site (pour retrouver le fichier) et à
+     outils/voix-liste.js (pour savoir quoi enregistrer). Le prénom n'est jamais lu. */
+  function propre(s) { return String(s).replace(/\[\[|\]\]|\{\{|\}\}/g, '').replace(/\s+/g, ' ').trim(); }
+  function sansPrenom(s) { return String(s).replace(/\{(prenom|dePrenom|virgulePrenom)\}/g, ''); }
+  function cleVoix(s) {
+    s = propre(s).normalize('NFC');
+    var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(36);
+  }
+  /* Un texte à lire, découpé là où il change selon l'enfant (l'année de naissance) */
+  function decouperVoix(gab) {
+    return sansPrenom(gab).split(/(\{naissance\})/).map(function (x) { return x === '{naissance}' ? perso(x) : x; })
+      .map(propre).filter(function (x) { return x; });
+  }
+  var Voix = {
+    cle: cleVoix, propre: propre,
+    texte: function (t) { return decouperVoix(t); },
+    titre: function (ch) { return decouperVoix(ch.titre + '. ' + ch.accroche); },
+    introDefi: function (d) { return [propre(d.titre + '. ' + d.consigne + (d.objectifTexte ? ' ' + d.objectifTexte : ''))]; },
+    question: function (q, choix) {
+      if (!q) return [];
+      q = propre(sansPrenom(q));
+      if (!(choix && choix.length > 1)) return [q];
+      var c = choix.map(function (x, i) { return i === 0 && !/[?…:]$/.test(q) ? x.charAt(0).toUpperCase() + x.slice(1) : x; });
+      return [propre(q + (/[?…:.]$/.test(q) ? ' ' : '. ') + c.join(' ? ') + ' ?')];
+    }
+  };
+
+  window.Outils = { fmt: fmt, perso: perso, Enfant: Enfant, Voix: Voix, nu: nu, gabarit: gabarit, norm: norm, juger: juger, distance: distance, Progres: Progres, el: el };
 })();

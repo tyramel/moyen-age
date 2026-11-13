@@ -19,13 +19,14 @@
       '<p class="defi__retour" aria-live="polite"></p>' +
       '<div class="defi__pied"><p class="defi__passer"></p><button type="button" class="btn defi__suite" hidden></button></div>';
     var q = function (s) { return box.querySelector(s); };
+    var qBrute = '', choixBruts = null;   // la question telle qu'écrite dans contenu.js, pour retrouver son enregistrement
     q('.defi__titre').textContent = O.nu(d.titre);
     q('.defi__consigne').innerHTML = fmt(d.consigne) + (d.objectifTexte ? ' ' + fmt(d.objectifTexte) : '');
     q('.defi__passer').textContent = U.passer;
     var bSuite = q('.defi__suite');
     var ui = {
       corps: q('.defi__corps'),
-      q: function (t) { q('.defi__q').innerHTML = t ? fmt(t) : ''; if (t && ctx.dire && box.classList.contains('on')) setTimeout(function () { ctx.dire(aLire(false)); }, 60); },
+      q: function (t, choix) { qBrute = t || ''; choixBruts = choix || null; q('.defi__q').innerHTML = t ? fmt(t) : ''; if (t && ctx.dire && box.classList.contains('on')) setTimeout(function () { ctx.dire(aLire(false)); }, 60); },
       retour: function (t, classe) { var r = q('.defi__retour'); r.className = 'defi__retour' + (classe ? ' ' + classe : ''); r.innerHTML = t ? fmt(t) : ''; },
       compte: function (t) { q('.defi__compte').textContent = t || ''; },
       suite: function (label, fn) { bSuite.hidden = false; bSuite.textContent = label; bSuite.onclick = function () { bSuite.hidden = true; fn(); }; setTimeout(function () { try { bSuite.focus({ preventScroll: true }); } catch (e) { /* rien */ } }, 30); },
@@ -51,13 +52,9 @@
     var jeu = TYPES[d.type](d, ui, finir, { U: U, couche: ctx.couche, gagner: gagner }) || {};
     // Pour la lecture à voix haute : la consigne (à l'ouverture), la question et les propositions
     function aLire(avecConsigne) {
-      var t = [], c = q('.defi__consigne');
-      if (avecConsigne) t.push(O.nu(d.titre) + '.');
-      if (avecConsigne && !c.hidden) t.push(c.textContent);
-      t.push(q('.defi__q').textContent);
-      var choix = [].map.call(box.querySelectorAll('.defi__choix .btn:not(:disabled)'), function (b) { return b.textContent; });
-      if (choix.length > 1) t.push(choix.join(' ? ') + ' ?');
-      return t.join(' ').replace(/\s+/g, ' ').trim();
+      var t = [];
+      if (avecConsigne && !q('.defi__consigne').hidden) t = t.concat(O.Voix.introDefi(d));
+      return t.concat(O.Voix.question(qBrute, choixBruts));
     }
     return {
       el: box,
@@ -131,7 +128,7 @@
     function poser() {
       var qn = d.questions[i], ch = qn.choix || d.choixCommuns, essais = 0;
       ui.compte(U.question + ' ' + (i + 1) + ' ' + U.sur + ' ' + n);
-      ui.q(qn.q); ui.retour(''); ui.cacherSuite();
+      ui.q(qn.q, ch); ui.retour(''); ui.cacherSuite();
       var zone = el('div', 'defi__choix');
       ui.corps.innerHTML = ''; ui.corps.appendChild(zone);
       ch.forEach(function (c, k) {
