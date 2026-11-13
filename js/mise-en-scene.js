@@ -1,0 +1,201 @@
+/* ==========================================================================
+   MISE EN SCÈNE : ce que la caméra montre à chaque pas.
+   Aucun texte ici (il est dans contenu.js). Les positions sont en pourcentage
+   de l'image : [x, y]. Une caméra s'écrit [x, y, zoom] : le point visé et le
+   grossissement (1 = toute la largeur de l'image).
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  /* ---------- Les décors ---------- */
+  window.SCENES = {
+    ouverture: { type: 'image', src: 'medias/ouverture.webp',
+      points: { cavaliers: [19.5, 37], chateau: [70, 33], famille: [29, 56] } },
+    frise: { type: 'planche', dessin: 'frise' },
+    seigneurie: { type: 'image', src: 'medias/seigneurie.webp',
+      points: { chateau: [66, 11], bois: [17, 16], reserves: [80, 44], tenures: [37, 33], eglise: [24.5, 52], moulin: [40, 74], peage: [81, 74], village: [9, 49] },
+      cibles: { chateau: [66, 19], bois: [16, 24], reserves: [82, 50], tenures: [38, 39], eglise: [25, 60], moulin: [41, 85], peage: [79, 79] } },
+    village: { type: 'image', src: 'medias/village.webp',
+      points: { moulin: [77, 50], four: [59, 40], pressoir: [26, 43] } },
+    chaumiere: { type: 'image', src: 'medias/chaumiere.webp',
+      points: { bouillie: [52, 60], pain: [62, 64], toile: [80, 56] } },
+    printemps: { type: 'image', src: 'medias/printemps.webp' },
+    ete: { type: 'image', src: 'medias/ete.webp' },
+    automne: { type: 'image', src: 'medias/automne.webp' },
+    hiver: { type: 'image', src: 'medias/hiver.webp' },
+    outils: { type: 'planche', dessin: 'outils',
+      points: { houe: [13.5, 56, 'bas'], charrue: [32.5, 56, 'bas'], faucille: [52, 56, 'bas'], faux: [72, 56, 'bas'], hache: [87.5, 56, 'bas'] } },
+    charrue: { type: 'planche', dessin: 'charrue',
+      points: { roues: [74.4, 35], coutre: [58.2, 36.5], soc: [50, 67, 'bas'], versoir: [36.5, 43], mancheron: [14, 13.5] },
+      cibles: { roues: [74.4, 46.6], coutre: [59.8, 50], soc: [49, 63.5], versoir: [39.5, 53], mancheron: [19.5, 25] } },
+    assolement: { type: 'planche', dessin: 'assolement' },
+    chateau: { type: 'image', src: 'medias/chateau.webp',
+      points: { hauteur: [25, 70], fosse: [8, 70], pontlevis: [35, 80], herse: [39, 66], remparts: [56, 62], creneaux: [53, 55], ronde: [42, 42],
+        tour: [70, 53], meurtrieres: [72.6, 66, 'bas'], poterne: [57.1, 71], bassecour: [58, 49], hautecour: [58, 31], chapelle: [55.5, 15], donjon: [70, 13] },
+      cibles: { fosse: [8, 73], pontlevis: [35.5, 83], herse: [39, 70], remparts: [56, 67], creneaux: [28.5, 49], ronde: [43, 44.5],
+        tour: [17, 52], meurtrieres: [72.6, 63], bassecour: [57, 52], hautecour: [58, 32], chapelle: [55, 22], donjon: [70.5, 22] } },
+    hommage: { type: 'image', src: 'medias/hommage.webp',
+      points: { mains: [67, 55], reliques: [36, 50], comte: [72, 30], vassal: [57, 62, 'bas'] } },
+    ecuyer: { type: 'image', src: 'medias/ecuyer.webp',
+      points: { page: [79, 50], ecuyer: [21.5, 34], armes: [9, 27] } },
+    adoubement: { type: 'image', src: 'medias/adoubement.webp',
+      points: { epee: [49, 53], chevalier: [40, 62, 'bas'] } },
+    tournoi: { type: 'image', src: 'medias/tournoi.webp',
+      points: { lance: [62, 44] } },
+    banquet: { type: 'image', src: 'medias/banquet.webp',
+      points: { troubadour: [72, 40], fou: [89, 41], echecs: [81, 37, 'bas'], seigneur: [10, 37] } },
+    soir: { type: 'image', src: 'medias/seigneurie.webp', classe: 'soir', alt: 'soir' }
+  };
+
+  /* ---------- Les pas ----------
+     s : décor ; cam : caméra ; et : étiquettes visibles ; f : état du schéma ;
+     roue : saison montrée par la roue ; note : petite note sous la légende. */
+  var FIT = { fit: true, bas: 0.34 };       // image entière, au-dessus du panneau de défi
+  var FIT_SAISIE = { fit: true, bas: 0.42 }; // idem, avec un panneau plus haut (champ de saisie)
+  window.MISE_EN_SCENE = {
+    /* Ouverture */
+    'ouverture-titre': { s: 'ouverture', cam: [56, 46, 1.05] },
+    'ouv-1': { s: 'ouverture', cam: [31, 72, 1.75], et: ['famille'] },
+    'ouv-2': { s: 'ouverture', cam: [21, 40, 2.3], et: ['cavaliers'] },
+    'ouv-3': { s: 'ouverture', cam: [62, 46, 1.3], et: ['chateau'] },
+    'ouv-4': { s: 'ouverture', cam: [70, 30, 1.9] },
+    'ouv-5': { s: 'ouverture', cam: [50, 50, 1] },
+
+    /* 1. Le temps */
+    'temps-titre': { s: 'frise', cam: [50, 50, 1], f: 0 },
+    'tps-1': { s: 'frise', cam: [50, 50, 1], f: 1 },
+    'tps-2': { s: 'frise', cam: [50, 50, 1], f: 2 },
+    'tps-3': { s: 'frise', cam: [50, 50, 1], f: 3 },
+    'tps-4': { s: 'frise', cam: [50, 50, 1], f: 4 },
+    'tps-5': { s: 'frise', cam: [48.7, 42.2, 3.6, 0.5, 0.38], f: 5 },
+    'tps-6': { s: 'frise', cam: [48.7, 42.2, 3.6, 0.5, 0.38], f: 6 },
+    'tps-7': { s: 'frise', cam: [50, 50, 1], f: 7 },
+    'tps-defi': { s: 'frise', cam: [50, 50, 1], f: 7 },
+    'tps-8': { s: 'frise', cam: [38.4, 42.2, 3.6, 0.5, 0.38], f: 8 },
+    'tps-9': { s: 'frise', cam: [46.5, 42.2, 2.6, 0.5, 0.4], f: 9 },
+    'tps-10': { s: 'ouverture', cam: [48, 46, 1], et: ['chateau', 'cavaliers'] },
+
+    /* 2. La seigneurie */
+    'seigneurie-titre': { s: 'seigneurie', cam: [50, 50, 1] },
+    'sgn-1': { s: 'seigneurie', cam: [50, 50, 1] },
+    'sgn-2': { s: 'seigneurie', cam: [52, 44, 1.12], note: 'lexiqueRouge' },
+    'sgn-3': { s: 'seigneurie', cam: [68, 22, 2.2], et: ['chateau'] },
+    'sgn-4': { s: 'seigneurie', cam: [19, 26, 1.9], et: ['bois'] },
+    'sgn-5': { s: 'seigneurie', cam: [79, 50, 1.9], et: ['reserves'] },
+    'sgn-6': { s: 'seigneurie', cam: [66, 58, 2.5] },
+    'sgn-7': { s: 'seigneurie', cam: [38, 40, 2.1], et: ['tenures'] },
+    'sgn-8': { s: 'seigneurie', cam: [32, 44, 1.6], et: ['tenures'] },
+    'sgn-defi-champs': { s: 'seigneurie', cam: [50, 38, 1.05] },
+    'sgn-9': { s: 'seigneurie', cam: [14, 62, 1.9], et: ['village'] },
+    'sgn-10': { s: 'village', cam: [77, 58, 1.9], et: ['moulin'] },
+    'sgn-11': { s: 'village', cam: [61, 46, 2.1], et: ['four'] },
+    'sgn-12': { s: 'village', cam: [23, 50, 2.0], et: ['pressoir'] },
+    'sgn-13': { s: 'village', cam: [55, 46, 1.15], et: ['moulin', 'four', 'pressoir'] },
+    'sgn-13b': { s: 'village', cam: [52, 46, 1.1], et: ['moulin', 'four', 'pressoir'] },
+    'sgn-14': { s: 'seigneurie', cam: [25, 60, 2.3], et: ['eglise'] },
+    'sgn-14b': { s: 'seigneurie', cam: [25, 56, 1.9], et: ['eglise'] },
+    'sgn-15': { s: 'seigneurie', cam: [76, 78, 2.2], et: ['peage'] },
+    'sgn-16': { s: 'seigneurie', cam: [50, 50, 1] },
+    'sgn-17': { s: 'seigneurie', cam: [68, 24, 1.8], et: ['chateau'] },
+    'sgn-defi': { s: 'seigneurie', cam: FIT },
+
+    /* 3. Les paysans */
+    'paysans-titre': { s: 'chaumiere', cam: [50, 50, 1] },
+    'pay-1': { s: 'chaumiere', cam: [45, 48, 1.15] },
+    'pay-2': { s: 'chaumiere', cam: [57, 64, 2.1], et: ['bouillie', 'pain'] },
+    'pay-3': { s: 'chaumiere', cam: [72, 52, 1.9], et: ['toile'] },
+    'pay-4': { s: 'chaumiere', cam: [50, 50, 1.05] },
+    'pay-5': { s: 'chaumiere', cam: [58, 50, 1.4] },
+    'pay-6': { s: 'chaumiere', cam: [70, 46, 1.7] },
+    'pay-6b': { s: 'chaumiere', cam: [76, 44, 2.0] },
+    'pay-7': { s: 'chaumiere', cam: [22, 46, 1.6] },
+    'pay-defi-tri': { s: 'chaumiere', cam: [50, 40, 1.05] },
+    'pay-8': { s: 'printemps', cam: [50, 50, 1], roue: 'toutes' },
+    'pay-9': { s: 'printemps', cam: [32, 55, 1.5], roue: 'printemps' },
+    'pay-10': { s: 'ete', cam: [45, 64, 1.4], roue: 'ete' },
+    'pay-11': { s: 'automne', cam: [55, 54, 1.3], roue: 'automne' },
+    'pay-12': { s: 'hiver', cam: [60, 60, 1.3], roue: 'hiver' },
+    'pay-defi-saisons': { s: 'hiver', cam: [50, 40, 1.05], roue: 'toutes' },
+
+    /* 4. L'agriculture */
+    'agriculture-titre': { s: 'ete', cam: [50, 50, 1.08] },
+    'agr-1': { s: 'outils', cam: [50, 50, 1], f: 1, et: ['houe', 'charrue', 'faucille'] },
+    'agr-2': { s: 'outils', cam: [50, 50, 1], f: 1, et: ['houe', 'charrue', 'faucille'] },
+    'agr-3': { s: 'outils', cam: [50, 50, 1], f: 2, et: ['houe', 'charrue', 'faucille', 'faux', 'hache'] },
+    'agr-4': { s: 'charrue', cam: [50, 50, 1], f: 'tout' },
+    'agr-5': { s: 'charrue', cam: [72, 44, 1.5], f: 'roues', et: ['roues'] },
+    'agr-6': { s: 'charrue', cam: [59, 48, 1.8], f: 'coutre', et: ['coutre'] },
+    'agr-7': { s: 'charrue', cam: [50, 56, 1.9], f: 'soc', et: ['soc'] },
+    'agr-8': { s: 'charrue', cam: [39, 50, 1.8], f: 'versoir', et: ['versoir'] },
+    'agr-9': { s: 'charrue', cam: [22, 27, 1.5], f: 'mancheron', et: ['mancheron'] },
+    'agr-defi-charrue': { s: 'charrue', cam: FIT, f: 'tout' },
+    'agr-10': { s: 'assolement', cam: [50, 50, 1], f: 0 },
+    'agr-11': { s: 'assolement', cam: [50, 50, 1], f: 0 },
+    'agr-11b': { s: 'assolement', cam: [50, 50, 1], f: 1 },
+    'agr-12': { s: 'assolement', cam: [50, 50, 1], f: 2 },
+    'agr-13': { s: 'assolement', cam: [50, 50, 1], f: 3 },
+    'agr-defi-assolement': { s: 'assolement', cam: [50, 50, 1], f: 1 },
+    'agr-14': { s: 'assolement', cam: [50, 50, 1], f: 1 },
+
+    /* 5. Le château fort */
+    'chateau-titre': { s: 'chateau', cam: [50, 50, 1] },
+    'cht-1': { s: 'chateau', cam: [50, 50, 1] },
+    'cht-2': { s: 'chateau', cam: [44, 62, 1.2] },
+    'cht-3': { s: 'chateau', cam: [30, 66, 1.5], et: ['hauteur'] },
+    'cht-4': { s: 'chateau', cam: [14, 72, 1.8], et: ['fosse'] },
+    'cht-5': { s: 'chateau', cam: [35, 76, 2.3], et: ['pontlevis'] },
+    'cht-6': { s: 'chateau', cam: [39, 68, 3], et: ['herse'] },
+    'cht-7': { s: 'chateau', cam: [52, 62, 1.6], et: ['remparts'] },
+    'cht-8': { s: 'chateau', cam: [46, 48, 2.5], et: ['ronde', 'creneaux'] },
+    'cht-9': { s: 'chateau', cam: [68, 60, 2.4], et: ['tour', 'meurtrieres'] },
+    'cht-defi-defenses': { s: 'chateau', cam: [50, 38, 1.05] },
+    'cht-10': { s: 'chateau', cam: [57, 70, 2.6], et: ['poterne'] },
+    'cht-11': { s: 'chateau', cam: [57, 49, 2.3], et: ['bassecour'] },
+    'cht-12': { s: 'chateau', cam: [55, 26, 2.3], et: ['hautecour', 'chapelle'] },
+    'cht-13': { s: 'chateau', cam: [70, 22, 2.2], et: ['donjon'] },
+    'cht-defi': { s: 'chateau', cam: FIT_SAISIE },
+
+    /* 6. Le seigneur et ses vassaux */
+    'seigneurs-titre': { s: 'hommage', cam: [50, 50, 1] },
+    'sei-1': { s: 'chateau', cam: [70, 22, 2.6], et: ['donjon'] },
+    'sei-2': { s: 'seigneurie', cam: [40, 44, 1.5] },
+    'sei-2b': { s: 'seigneurie', cam: [20, 60, 1.9] },
+    'sei-3': { s: 'seigneurie', cam: [64, 58, 2.2] },
+    'sei-4': { s: 'ouverture', cam: [21, 40, 2.3] },
+    'sei-5': { s: 'seigneurie', cam: [66, 26, 1.6] },
+    'sei-6': { s: 'hommage', cam: [52, 50, 1.1] },
+    'sei-7': { s: 'hommage', cam: [62, 54, 1.4], et: ['vassal'] },
+    'sei-8': { s: 'hommage', cam: [58, 62, 1.7], et: ['vassal'] },
+    'sei-defi-vassal': { s: 'hommage', cam: [50, 38, 1.05] },
+    'sei-9': { s: 'hommage', cam: [50, 50, 1.05] },
+    'sei-10': { s: 'hommage', cam: [66, 44, 1.9], et: ['comte'] },
+    'sei-11': { s: 'hommage', cam: [67, 55, 3], et: ['mains'] },
+    'sei-12': { s: 'hommage', cam: [37, 58, 2.3], et: ['reliques'] },
+    'sei-13': { s: 'hommage', cam: [60, 50, 1.4] },
+    'sei-defi-hommage': { s: 'hommage', cam: [50, 38, 1.05] },
+
+    /* 7. Les chevaliers */
+    'chevaliers-titre': { s: 'tournoi', cam: [50, 50, 1] },
+    'che-1': { s: 'ecuyer', cam: [50, 50, 1] },
+    'che-2': { s: 'ecuyer', cam: [14, 48, 1.6], et: ['armes'] },
+    'che-3': { s: 'ecuyer', cam: [78, 60, 2.2], et: ['page'] },
+    'che-4': { s: 'ecuyer', cam: [84, 50, 1.8], et: ['page'] },
+    'che-5': { s: 'ecuyer', cam: [26, 50, 1.6], et: ['ecuyer'] },
+    'che-6': { s: 'adoubement', cam: [46, 58, 1.6], et: ['epee', 'chevalier'] },
+    'che-defi-chevalier': { s: 'adoubement', cam: [50, 38, 1.05] },
+    'che-7': { s: 'tournoi', cam: [50, 50, 1] },
+    'che-8': { s: 'tournoi', cam: [64, 55, 1.8], et: ['lance'] },
+    'che-9': { s: 'banquet', cam: [24, 46, 1.6], et: ['seigneur'] },
+    'che-10': { s: 'banquet', cam: [72, 52, 2], et: ['troubadour'] },
+    'che-11': { s: 'banquet', cam: [84, 46, 2.2], et: ['fou', 'echecs'] },
+    'che-12': { s: 'banquet', cam: [50, 50, 1.1] },
+    'che-13': { s: 'tournoi', cam: [70, 52, 2] },
+    'che-14': { s: 'tournoi', cam: [82, 50, 2.4] },
+    'che-defi-vraifaux': { s: 'tournoi', cam: [50, 38, 1.05] },
+
+    /* 8. Le grand défi */
+    'final-titre': { s: 'soir', cam: [50, 50, 1] },
+    'fin-1': { s: 'soir', cam: [52, 44, 1.15] },
+    'fin-defi': { s: 'soir', cam: [50, 36, 1.05] }
+  };
+})();

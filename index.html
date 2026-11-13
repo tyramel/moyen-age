@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Moyen Âge</title>
+<meta name="description" content="La vie dans une seigneurie, au temps des châteaux forts : la leçon d'histoire de CM1, à parcourir en défilant.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/lenis.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=6">
+</head>
+<body>
+
+<header class="barre">
+  <a class="barre__titre" href="#" id="haut">Le Moyen Âge</a>
+  <nav class="barre__sceaux" id="sceaux" aria-label="Chapitres"></nav>
+</header>
+
+<!-- La scène : fixe, plein écran. Tout s'y joue. -->
+<div class="scene" id="scene" data-mode="titre">
+  <div class="couches" id="couches"></div>
+  <div class="voile" aria-hidden="true"></div>
+  <div class="voile-titre" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="roue" id="roue"></div>
+  <div class="titre" id="titre"></div>
+  <div class="legende" id="legende" aria-live="polite"></div>
+  <div class="defis" id="defis"></div>
+  <div class="accueil" id="accueil" hidden></div>
+  <button type="button" class="voix" id="voix" aria-pressed="false" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path class="voix__hp" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="voix__onde" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+  </button>
+  <button type="button" class="suivant" id="suivant" aria-label="Passage suivant">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>
+  </button>
+</div>
+
+<div class="bandeau-revision" id="bandeauRevision" hidden></div>
+
+<!-- Le parcours : seulement de la hauteur de défilement, un bloc par pas. -->
+<main class="parcours" id="parcours"></main>
+
+<!-- Le bilan : il passe par-dessus la scène à la fin. -->
+<section class="bilan" id="bilan" aria-label="Ce que tu sais maintenant"></section>
+
+<noscript>Ce site a besoin de JavaScript pour s'animer. Active-le dans ton navigateur, puis recharge la page.</noscript>
+
+<!-- Bibliothèques embarquées (aucun appel réseau) : GSAP 3.15 (licence standard gratuite), Lenis 1.3 (MIT) -->
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/ScrollTrigger.min.js"></script>
+<script src="js/vendor/SplitText.min.js"></script>
+<script src="js/vendor/lenis.min.js"></script>
+<!-- Le site -->
+<script src="js/contenu.js?v=6"></script>
+<script src="js/outils.js?v=6"></script>
+<script src="js/dessins.js?v=6"></script>
+<script src="js/mise-en-scene.js?v=6"></script>
+<script src="js/defis.js?v=6"></script>
+<script src="js/moteur.js?v=6"></script>
+</body>
+</html>
