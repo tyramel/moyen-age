@@ -577,7 +577,7 @@ window.CONTENU = {
     pasToi: "Tu n'es pas {prenom} ?",
     voix: "Lire à voix haute",
     voixOff: "Arrêter la lecture à voix haute",
-    reviser: "Réviser les défis",
+    reviser: "Réviser uniquement les défis",
     revision: "Révision : les défis seulement",
     quitterRevision: "Quitter la révision",
     ecris: "Écris ta réponse ici",

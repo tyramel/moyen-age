@@ -433,8 +433,18 @@
   var bVoix = $('#voix'), synth = window.speechSynthesis, voixFr = null, voixOn = false;
   function choisirVoix() {
     var l = synth.getVoices().filter(function (v) { return /^fr([-_]|$)/i.test(v.lang); });
-    var fr = l.filter(function (v) { return /fr[-_]FR/i.test(v.lang); });
-    voixFr = fr.find(function (v) { return /Amélie|Audrey|Aurélie|Thomas|Marie|Denise|Google/i.test(v.name); }) || fr[0] || l[0] || null;
+    // les voix les plus naturelles d'abord : neuronales (Edge), premium ou améliorées (Apple), Google (Chrome)
+    function note(v) {
+      var n = v.name, s = /fr[-_]FR/i.test(v.lang) ? 1 : 0;
+      if (/Natural|Neural|Online/i.test(n)) s += 50;
+      else if (/Premium/i.test(n)) s += 40;
+      else if (/Enhanced|Amélioré/i.test(n)) s += 30;
+      else if (/Google/i.test(n)) s += 20;
+      if (/Compact|eSpeak/i.test(n)) s -= 10;
+      return s;
+    }
+    l.sort(function (a, b) { return note(b) - note(a); });
+    voixFr = l[0] || null;
   }
   function dire(texte) {
     if (!voixOn || !synth || !texte) return;
