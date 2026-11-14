@@ -170,6 +170,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .legende p { margin: 0; font-size: clamp(1.3rem, 1.02rem + 1.05vw, 2.05rem); line-height: 1.42; color: var(--creme); text-wrap: pretty;
   text-shadow: 0 1px 14px rgba(0, 0, 0, .55); }
 .legende .mot, .defi .mot, .bilan .mot { font-weight: 700; }
+.insecable { white-space: nowrap; }
 .legende .rouge { font-weight: 700; color: var(--rouge-vif); }
 .scene--papier .legende p { color: var(--encre); text-shadow: none; }
 .scene--papier .legende .rouge { color: var(--rouge); }

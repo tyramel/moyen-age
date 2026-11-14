@@ -42,7 +42,9 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/ ([?!:;»])/g, ' $1').replace(/« /g, '« ')
       .replace(/\[\[(.+?)\]\]/g, '<strong class="rouge">$1</strong>')
-      .replace(/\{\{(.+?)\}\}/g, '<strong class="mot">$1</strong>');
+      .replace(/\{\{(.+?)\}\}/g, '<strong class="mot">$1</strong>')
+      // un mot à trait d'union ne se coupe pas en fin de ligne (« haute-cour », « eux-mêmes »)
+      .replace(/[A-Za-zÀ-ÖØ-öø-ÿŒœ]+(?:-[A-Za-zÀ-ÖØ-öø-ÿŒœ]+)+/g, '<span class="insecable">$&</span>');
   }
   /* Texte nu (sans marques), pour les attributs et les comparaisons */
   function nu(s) { return perso(s).replace(/\[\[|\]\]|\{\{|\}\}/g, ''); }

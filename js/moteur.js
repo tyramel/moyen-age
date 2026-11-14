@@ -164,16 +164,53 @@
   }
 
   /* ---------- 5. Le texte : titres et légendes ---------- */
-  var decoupe = null, animTexte = null;
+  var decoupes = [], animsTexte = [];
   function nettoyerTexte() {
-    if (animTexte) { animTexte.kill(); animTexte = null; }
-    if (decoupe) { decoupe.revert(); decoupe = null; }
+    animsTexte.forEach(function (a) { a.kill(); }); animsTexte = [];
+    decoupes.forEach(function (d) { d.revert(); }); decoupes = [];
   }
-  function reveler(cible, delai) {
+  /* Le texte monte ligne par ligne, puis redevient du texte normal. Pour que rien ne bouge
+     à ce moment-là, les lignes découpées doivent tomber exactement comme celles du navigateur.
+     On compte donc les mots de chaque ligne avant et après la découpe ; s'ils diffèrent,
+     on ne découpe pas et le paragraphe monte d'un bloc. (Un « mot » s'arrête à une espace
+     ordinaire : une espace insécable, devant « ? » par exemple, ne coupe pas.) */
+  var ESPACE = /[ \t\n\r]/;
+  function motsParLigne(t) { return t.split(/[ \t\n\r]+/).filter(Boolean).length; }
+  function lignesDuNavigateur(cible) {
+    var w = document.createTreeWalker(cible, NodeFilter.SHOW_TEXT), n, r = document.createRange();
+    var lignes = [], ligne = -1, x = -Infinity, dansMot = false, ligneDuMot = -1;
+    while ((n = w.nextNode())) {
+      for (var k = 0; k < n.data.length; k++) {
+        if (ESPACE.test(n.data[k])) { dansMot = false; continue; }
+        r.setStart(n, k); r.setEnd(n, k + 1);
+        var b = r.getClientRects()[0]; if (!b) continue;
+        if (b.left < x - 1) ligne++;          // on revient à gauche : nouvelle ligne
+        if (ligne < 0) ligne = 0;
+        x = b.left;
+        if (!dansMot) { dansMot = true; ligneDuMot = ligne; lignes[ligne] = (lignes[ligne] || 0) + 1; }
+        else if (ligne !== ligneDuMot) return null;   // un mot coupé sur deux lignes : on ne découpe pas
+      }
+    }
+    return lignes;
+  }
+  function reveler(cibles, delai) {
     if (reduit || !SplitText) return;
-    decoupe = SplitText.create(cible, { type: 'lines', mask: 'lines' });
-    animTexte = gsap.from(decoupe.lines, { yPercent: 115, duration: 0.85, ease: 'power3.out', stagger: 0.08, delay: delai || 0.15,
-      onComplete: function () { if (decoupe) { decoupe.revert(); decoupe = null; } } });
+    var d = delai || 0.15;
+    [].forEach.call(cibles.nodeType ? [cibles] : cibles, function (cible) {
+      var avant = lignesDuNavigateur(cible);
+      var s = SplitText.create(cible, { type: 'lines', mask: 'lines', reduceWhiteSpace: false });
+      var apres = s.lines.map(function (l) { return motsParLigne(l.textContent); });
+      if (avant && avant.join() === apres.join()) {
+        decoupes.push(s);
+        animsTexte.push(gsap.from(s.lines, { yPercent: 115, duration: 0.85, ease: 'power3.out', stagger: 0.08, delay: d,
+          onComplete: function () { s.revert(); var j = decoupes.indexOf(s); if (j > -1) decoupes.splice(j, 1); } }));
+        d += s.lines.length * 0.08;
+      } else {
+        s.revert();
+        animsTexte.push(gsap.from(cible, { y: 28, opacity: 0, duration: 0.85, ease: 'power3.out', delay: d, clearProps: 'transform,opacity' }));
+        d += 0.08;
+      }
+    });
   }
   function afficherTexte(p, m, i) {
     nettoyerTexte();
