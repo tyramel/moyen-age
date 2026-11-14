@@ -154,8 +154,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   color: var(--creme); text-shadow: 0 4px 40px rgba(0, 0, 0, .45); text-wrap: balance; }
 .titre__acc { margin: 1.1em auto 0; max-width: 34em; font-size: clamp(1.15rem, 1rem + .8vw, 1.8rem); font-style: italic; color: var(--creme); opacity: .92; }
 .titre__inv { margin-top: 2.6em; font-size: 1rem; letter-spacing: .25em; text-transform: uppercase; opacity: .85; }
-.titre__inv::after { content: ""; display: block; width: 1.5px; height: 44px; margin: 14px auto 0; background: var(--creme); animation: tomber 1.8s var(--doux) infinite; transform-origin: 50% 0; }
-@keyframes tomber { 0% { transform: scaleY(0); } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+/* sous l'invitation : la petite souris (ou le doigt, sur tablette) qui montre le geste */
+.titre__geste { display: flex; justify-content: center; margin-top: 12px; }
+.titre__geste .geste { width: 34px; height: 46px; stroke: var(--creme); }
+.titre__geste .geste__molette { stroke: var(--or); }
+.scene--papier .titre__geste .geste { stroke: var(--encre); }
 .titre__reprendre { pointer-events: auto; margin: 1.6em auto 0; padding: .7em 1.4em; border-radius: 999px; background: var(--creme); color: var(--encre); font-weight: 700; font-size: 1.05rem; }
 .scene--papier .titre__h, .scene--papier .titre__acc { color: var(--encre); text-shadow: none; }
 .ligne-masque { overflow: hidden; }
@@ -287,7 +290,55 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .accueil__champ .defi__champ { font-weight: 400; width: 100%; box-sizing: border-box; }
 .accueil__bas { display: flex; align-items: center; justify-content: space-between; gap: .6em; flex-wrap: wrap; }
 .accueil__note { margin: 0; font-size: .82em; color: var(--brun); }
-.titre__pasToi { pointer-events: auto; margin: 1.2em auto 0; font-size: .95rem; color: var(--creme); text-decoration: underline; opacity: .8; }
+.titre__pasToi { pointer-events: auto; margin: 0; font-size: .95rem; color: var(--creme); text-decoration: underline; opacity: .8; }
+.titre__pasToi:hover { opacity: 1; }
+.titre__liens { display: flex; flex-wrap: wrap; justify-content: center; gap: .4em 1.6em; margin-top: 1.2em; }
+
+/* ---------- Mode d'emploi (la carte du début) ---------- */
+#tuto { overflow-y: auto; place-items: stretch; }
+.tuto__carte { gap: .85em; margin: auto; }   /* centrée, mais jamais coupée en haut sur un petit écran */
+.tuto__choix { display: grid; justify-items: center; gap: .35em; margin-top: .3em; }
+.tuto__choix .btn:first-child { width: 100%; justify-content: center; }
+@media (max-width: 700px) { #tuto { padding-bottom: 190px; } }   /* la carte reste au-dessus des boutons ronds */
+.tuto__avant { margin: 0 0 -.45em; font-size: .8em; color: var(--brun); }
+.tuto__ligne { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: .9em; align-items: center; }
+.tuto__ligne p { margin: 0; line-height: 1.4; }
+.tuto__dessin { height: 58px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.tuto__sep { border: 0; height: 1px; width: 100%; margin: .15em 0; background: rgba(107, 74, 47, .25); }
+.tuto__hp { width: 34px; height: 34px; fill: none; stroke: var(--encre); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tuto__hp .voix__hp { fill: var(--encre); }
+.tuto__ecouter { display: inline-flex; align-items: center; gap: .5em; }
+.tuto__ecouter svg { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tuto__ecouter .voix__hp { fill: currentColor; }
+/* les dessins : la souris dont la molette roule, le doigt qui glisse, les touches qu'on enfonce */
+.geste { width: 40px; height: 54px; overflow: visible; fill: none; stroke: var(--encre); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.geste__raie { stroke-width: 1.4; opacity: .35; }
+.geste__molette { stroke: var(--rouge); stroke-width: 3; animation: molette 1.6s var(--doux) infinite; }
+.geste__chevron { animation: rebond 1.6s ease-in-out infinite; }
+.geste__main { animation: glisse 1.8s var(--doux) infinite; }
+.geste__ongle { stroke-width: 1.4; opacity: .45; }
+.touche { display: inline-grid; place-items: center; width: 26px; height: 26px; border: 2px solid var(--encre); border-radius: 6px;
+  font-weight: 700; font-size: .85rem; line-height: 1; box-shadow: 0 3px 0 var(--encre); }
+.touche--appui { animation: appui 1.6s infinite; }
+.geste-rond { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--encre); display: grid; place-items: center; }
+.geste-rond svg { width: 20px; height: 20px; fill: none; stroke: var(--encre); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; animation: rebond 1.6s ease-in-out infinite; }
+@keyframes molette { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { opacity: 0; } }
+@keyframes rebond { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+@keyframes glisse { 0% { transform: translateY(10px); opacity: 0; } 20% { opacity: 1; } 80% { transform: translateY(-8px); opacity: 1; } 100% { transform: translateY(-8px); opacity: 0; } }
+@keyframes appui { 0%, 40%, 100% { transform: translateY(0); box-shadow: 0 3px 0 var(--encre); } 20% { transform: translateY(3px); box-shadow: 0 0 0 var(--encre); } }
+/* le bouton de la voix, montré pendant la carte (au-dessus du voile) ou quand il attend un clic */
+.voix.voix--montre { z-index: 26; }
+.voix.voix--montre, .voix.voix--attend { border-color: var(--or); animation: halo 1.6s ease-out infinite; }
+.voix--montre:not([aria-pressed="true"]) svg, .voix--attend:not([aria-pressed="true"]) svg { stroke: var(--or); }
+.voix--montre:not([aria-pressed="true"]) .voix__hp, .voix--attend:not([aria-pressed="true"]) .voix__hp { fill: var(--or); }
+@keyframes halo { 0% { box-shadow: 0 0 0 0 rgba(227, 178, 60, .7); } 100% { box-shadow: 0 0 0 18px rgba(227, 178, 60, 0); } }
+.voix-bulle { position: absolute; z-index: 12; white-space: nowrap; padding: .55em .9em; border-radius: 12px;
+  background: var(--papier); color: var(--encre); font-size: .95rem; font-weight: 700; line-height: 1.3;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .4); pointer-events: none; transform: translateY(-50%); animation: bulle 2s ease-in-out infinite; }
+.voix-bulle::after { content: ""; position: absolute; right: -7px; top: 50%; margin-top: -7px;
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 7px solid var(--papier); }
+.voix-bulle[hidden] { display: none; }
+@keyframes bulle { 0%, 100% { transform: translate(0, -50%); } 50% { transform: translate(-5px, -50%); } }
 
 /* ---------- Parcours (hauteur de défilement) ---------- */
 .parcours { position: relative; z-index: 0; }

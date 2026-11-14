@@ -562,6 +562,37 @@ window.CONTENU = {
   },
 
   /* ------------------------------------------------------------------
+     MODE D'EMPLOI : la carte montrée une fois, au tout début
+     (souris et clavier sur ordinateur, doigt et flèche sur tablette)
+     ------------------------------------------------------------------ */
+  tuto: {
+    avant: "Dernière chose avant de partir",
+    titre: "Comment voyager dans le temps",
+    souris: "Fais rouler la {{molette}} de ta souris pour avancer dans l'histoire.",
+    clavier: "Ou utilise les {{flèches}} du clavier : ↓ pour avancer, ↑ pour revenir.",
+    doigt: "Fais glisser ton {{doigt}} vers le haut pour avancer dans l'histoire.",
+    fleche: "Ou touche la {{flèche}}, en bas à droite de l'écran.",
+    voix: "Une {{voix}} peut te raconter l'histoire. Tu pourras l'allumer ou l'éteindre avec le bouton qui brille, en bas à droite.",
+    ecouter: "Écouter la voix",
+    lire: "Lire sans la voix",
+    partir: "C'est parti",
+    aide: "Comment ça marche ?",
+    bulle: "Touche-moi pour entendre la voix"
+  },
+
+  /* ------------------------------------------------------------------
+     RÉACTIONS DE LA VOIX dans les défis (enregistrées, jamais affichées).
+     bravo : bonne réponse (on alterne les trois) ; presque : première erreur
+     sur une question ; dommage : erreurs suivantes ; sceau : défi terminé.
+     ------------------------------------------------------------------ */
+  reactions: {
+    bravo: ["Bravo !", "Bien joué !", "Exactement !"],
+    presque: ["Presque !"],
+    dommage: ["Dommage, essaie encore !"],
+    sceau: ["Tu as gagné le sceau !"]
+  },
+
+  /* ------------------------------------------------------------------
      PETITS TEXTES DE L'INTERFACE
      ------------------------------------------------------------------ */
   ui: {

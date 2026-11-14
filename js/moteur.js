@@ -182,20 +182,23 @@
       if (p.ch.numero) h += '<p class="titre__sur">' + C.ui.chapitre + ' ' + p.ch.numero + '</p>';
       h += '<h2 class="titre__h">' + fmt(p.ch.titre) + '</h2><p class="titre__acc">' + fmt(p.ch.accroche) + '</p>';
       if (i === 0) {
-        h += '<p class="titre__inv">' + C.meta.invitation + '</p>';
+        h += '<p class="titre__inv">' + C.meta.invitation + '</p><div class="titre__geste" aria-hidden="true">' + (tactile ? dessinDoigt() : dessinSouris()) + '</div>';
         var dernier = Progres.dernierPas(), rang = PAS.findIndex(function (x) { return x.id === dernier; });
         h += '<div class="titre__actions">';
         if (rang > 3) h += '<button type="button" class="titre__reprendre" data-rang="' + rang + '">' + C.ui.reprendre + '</button>';
         h += '<button type="button" class="titre__reviser">' + C.ui.reviser + '</button></div>';
-        if (O.Enfant.prenom()) h += '<button type="button" class="titre__pasToi">' + fmt(C.ui.pasToi) + '</button>';
+        h += '<div class="titre__liens">';
+        if (O.Enfant.prenom()) h += '<button type="button" class="titre__pasToi" data-pas-toi>' + fmt(C.ui.pasToi) + '</button>';
+        h += '<button type="button" class="titre__pasToi" data-aide>' + C.tuto.aide + '</button></div>';
       }
       titreEl.innerHTML = h;
       var b = titreEl.querySelector('.titre__reprendre'); if (b) b.onclick = function () { allerA(+b.getAttribute('data-rang'), true); };
-      var bp = titreEl.querySelector('.titre__pasToi'); if (bp) bp.onclick = ouvrirAccueil;
+      var bp = titreEl.querySelector('[data-pas-toi]'); if (bp) bp.onclick = ouvrirAccueil;
+      var ba = titreEl.querySelector('[data-aide]'); if (ba) ba.onclick = function () { ouvrirTuto(false); };
       var br = titreEl.querySelector('.titre__reviser'); if (br) br.onclick = entrerRevision;
       reveler(titreEl.querySelectorAll('.titre__h, .titre__acc'), 0.35);
       dire(O.Voix.titre(p.ch));
-      if (!reduit) gsap.from(titreEl.querySelectorAll('.titre__sur, .titre__inv, .titre__actions, .titre__pasToi'), { opacity: 0, y: 14, duration: 0.8, delay: 0.25, stagger: 0.25 });
+      if (!reduit) gsap.from(titreEl.querySelectorAll('.titre__sur, .titre__inv, .titre__geste, .titre__actions, .titre__liens'), { opacity: 0, y: 14, duration: 0.8, delay: 0.25, stagger: 0.25 });
     } else if (p.type === 'texte') {
       var t = fmt(p.t).replace(/^Œil de lynx : /, '<span class="lynx">Œil de lynx</span>');
       legende.innerHTML = '<p>' + t + '</p>' + (m.note ? '<p class="legende__note">' + fmt(C.ui[m.note]) + '</p>' : '');
@@ -217,7 +220,7 @@
     if (!defis[p.defi]) {
       var premier = true;
       defis[p.defi] = window.Defis.creer(p.defi, C.defis[p.defi], {
-        C: C, couche: o, numero: p.ch.numero, reduit: reduit, dire: dire,
+        C: C, couche: o, numero: p.ch.numero, reduit: reduit, dire: dire, reagir: reagir,
         fini: function (id) { Progres.gagner(id); },
         premierSceau: function () { var r = premier && !avaitDejaUnSceau; premier = false; avaitDejaUnSceau = true; return r; }
       });
@@ -308,6 +311,7 @@
   bSuivant.onclick = function () { allerA(courant + 1); };
   document.addEventListener('keydown', function (e) {
     var t = e.target, saisie = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
+    if (tutoOuvert) { gererClavierTuto(e); return; }
     if (saisie || e.metaKey || e.ctrlKey || e.altKey) return;
     if (document.body.classList.contains('au-bilan') || !accueilEl.hidden) return;
     var sur = t && t.tagName === 'BUTTON';
@@ -427,6 +431,77 @@
     f.querySelector('[data-passer]').onclick = function () { fermer('', 0); };
   }
 
+  /* ---------- 12 bis. Le mode d'emploi ----------
+     Une carte, montrée une fois (puis rouverte par « Comment ça marche ? ») :
+     souris et clavier sur ordinateur, doigt et flèche sur tablette, puis le choix de la voix.
+     Ce choix est un clic : il autorise aussi le navigateur à jouer le son. */
+  var tutoEl = $('#tuto'), tutoOuvert = false;
+  var tactile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  var HP = '<path class="voix__hp" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="voix__onde" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>';
+  function dessinSouris() {
+    return '<svg class="geste" viewBox="0 0 40 54"><path d="M20 8c0-4 5-4 5-7"/><rect x="8" y="8" width="24" height="34" rx="12"/>' +
+      '<path class="geste__raie" d="M20 8v12"/><path class="geste__molette" d="M20 13v4"/><path class="geste__chevron" d="M15 47l5 4 5-4"/></svg>';
+  }
+  function dessinDoigt() {
+    // une main qui pointe vers le haut (index tendu, pouce à gauche), et la flèche du geste
+    return '<svg class="geste" viewBox="0 0 40 54"><g class="geste__main"><path d="M14 6l6-5 6 5"/>' +
+      '<path d="M15 32V14a5 5 0 0 1 10 0v12c0-2.5 5-2.5 5 0v1c0-2.5 5-2.5 5 0v8c0 8-5 13-12 13h-2c-5 0-8-3-10-7l-4-7c-1.5-2.5 2-5 4.5-3z"/>' +
+      '<path class="geste__ongle" d="M17.5 15.5a2.5 2.5 0 0 1 5 0"/></g></svg>';
+  }
+  function ligneTuto(dessin, texte) {
+    return '<div class="tuto__ligne"><div class="tuto__dessin" aria-hidden="true">' + dessin + '</div><p>' + fmt(texte) + '</p></div>';
+  }
+  function tutoVu() { try { return localStorage.getItem('moyen-age-tuto') === '1'; } catch (e) { return false; } }
+  function ouvrirTuto(premiere) {
+    var U = C.tuto, avecVoix = !bVoix.hidden;
+    var h = '<div class="accueil__carte tuto__carte" role="dialog" aria-modal="true" aria-labelledby="tutoTitre">' +
+      (premiere ? '<p class="tuto__avant">' + U.avant + '</p>' : '') +
+      '<h2 class="accueil__titre" id="tutoTitre">' + U.titre + '</h2>';
+    if (tactile) {
+      h += ligneTuto(dessinDoigt(), U.doigt) +
+        ligneTuto('<span class="geste-rond"><svg viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></svg></span>', U.fleche);
+    } else {
+      h += ligneTuto(dessinSouris(), U.souris) +
+        ligneTuto('<span class="touche">↑</span><span class="touche touche--appui">↓</span>', U.clavier);
+    }
+    if (avecVoix) {
+      h += '<hr class="tuto__sep">' + ligneTuto('<svg class="tuto__hp" viewBox="0 0 24 24">' + HP + '</svg>', U.voix) +
+        '<div class="tuto__choix"><button type="button" class="btn tuto__ecouter" data-voix="1"><svg viewBox="0 0 24 24" aria-hidden="true">' + HP + '</svg>' + U.ecouter + '</button>' +
+        '<button type="button" class="btn btn--lien" data-voix="0">' + U.lire + '</button></div>';
+    } else {
+      h += '<div class="tuto__choix"><button type="button" class="btn" data-voix="">' + U.partir + '</button></div>';
+    }
+    tutoEl.innerHTML = h + '</div>';
+    tutoEl.hidden = false; tutoOuvert = true;
+    if (avecVoix) bVoix.classList.add('voix--montre');
+    if (lenis) lenis.stop();
+    tutoEl.querySelectorAll('[data-voix]').forEach(function (b) {
+      b.onclick = function () { var v = b.getAttribute('data-voix'); fermerTuto(v === '' ? null : v === '1'); };
+    });
+    var carte = tutoEl.firstChild;
+    if (!reduit) gsap.fromTo(carte, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: premiere ? 0.6 : 0.1 });
+    setTimeout(function () { var p = tutoEl.querySelector('.tuto__choix .btn'); try { p.focus({ preventScroll: true }); } catch (e) { /* rien */ } }, 350);
+  }
+  // choix : true = avec la voix, false = sans, null = on garde le réglage actuel
+  function fermerTuto(choix) {
+    if (!tutoOuvert) return;
+    tutoOuvert = false;
+    try { localStorage.setItem('moyen-age-tuto', '1'); } catch (e) { /* tant pis */ }
+    bVoix.classList.remove('voix--montre');
+    tutoEl.hidden = true; tutoEl.innerHTML = '';
+    if (lenis) lenis.start();
+    if (choix === true || choix === false) reglerVoix(choix);
+  }
+  function gererClavierTuto(e) {
+    if (e.key === 'Escape') { e.preventDefault(); fermerTuto(null); return; }
+    if (e.key !== 'Tab') return;
+    // le focus reste dans la carte
+    var l = tutoEl.querySelectorAll('button'), a = l[0], z = l[l.length - 1];
+    if (!tutoEl.contains(document.activeElement)) { e.preventDefault(); a.focus(); }
+    else if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+  }
+
   /* ---------- 13. Lecture à voix haute ----------
      Un seul bouton : allumé, il lit le passage en cours, puis chaque nouveau passage.
      Chaque texte a son enregistrement (medias/voix/<clé>.mp3, liste dans js/voix.js).
@@ -471,15 +546,59 @@
       lecteur.onended = function () { suivant(t); };
       lecteur.onerror = function () { parlerAppareil(texte, t); };
       lecteur.src = 'medias/voix/' + cle + '.mp3';
-      var pr = lecteur.play(); if (pr && pr.catch) pr.catch(function () { if (t === tour) bVoix.classList.remove('parle'); });
+      var pr = lecteur.play();
+      if (pr && pr.catch) pr.catch(function (err) {
+        if (t !== tour) return;
+        bVoix.classList.remove('parle');
+        if (err && err.name === 'NotAllowedError') bloque();
+      });
     } else parlerAppareil(texte, t);
   }
   function parlerAppareil(texte, t) {
     if (!synth || !window.SpeechSynthesisUtterance) { suivant(t); return; }
     var u = new window.SpeechSynthesisUtterance(String(texte).replace(/[«»]/g, ''));
     u.lang = 'fr-FR'; if (voixFr) u.voice = voixFr; u.rate = 0.92;
-    u.onend = u.onerror = function () { suivant(t); };
+    u.onend = function () { suivant(t); };
+    u.onerror = function (ev) {
+      if (ev && ev.error === 'not-allowed') { if (t === tour) { bVoix.classList.remove('parle'); bloque(); } return; }
+      suivant(t);
+    };
     synth.speak(u);
+  }
+  /* Le navigateur refuse le son tant qu'on n'a ni cliqué ni appuyé sur une touche
+     (la molette et le doigt qui glisse ne comptent pas). Si la voix était restée allumée
+     d'une visite à l'autre, une bulle invite à toucher le bouton ; le premier clic ou
+     la première touche relance la lecture. */
+  var attenteGeste = false, bulle = null;
+  function bloque() {
+    attenteGeste = true;
+    if (!bulle) { bulle = el('div', 'voix-bulle'); bulle.setAttribute('role', 'status'); bulle.textContent = C.tuto.bulle; scene.appendChild(bulle); }
+    var r = bVoix.getBoundingClientRect(), s = scene.getBoundingClientRect();
+    bulle.style.right = Math.round(s.right - r.left + 14) + 'px';
+    bulle.style.top = Math.round(r.top - s.top + r.height / 2) + 'px';
+    bulle.hidden = false; bVoix.classList.add('voix--attend');
+  }
+  function finAttente() {
+    attenteGeste = false;
+    if (bulle) bulle.hidden = true;
+    bVoix.classList.remove('voix--attend');
+  }
+  function reprendre() { finAttente(); dire(texteEnCours()); }
+  ['pointerdown', 'keydown'].forEach(function (type) {
+    document.addEventListener(type, function (e) { if (attenteGeste && !bVoix.contains(e.target)) reprendre(); }, true);
+  });
+  // Les réactions dans les défis : « Bravo ! », « Presque ! », « Dommage, essaie encore ! »…
+  var rangBravo = 0;
+  function reagir(sorte) {
+    var l = (C.reactions || {})[sorte];
+    if (!voixOn || !l || !l.length) return;
+    dire([sorte === 'bravo' ? l[rangBravo++ % l.length] : l[0]]);
+  }
+  function reglerVoix(on) {
+    voixOn = on; majVoix();
+    try { localStorage.setItem('moyen-age-voix', on ? '1' : '0'); } catch (e) { /* rien */ }
+    finAttente();
+    if (on) dire(texteEnCours()); else taire();
   }
   function texteEnCours() {
     if (courant < 0) return [];
@@ -498,9 +617,9 @@
     try { voixOn = localStorage.getItem('moyen-age-voix') === '1'; } catch (e) { /* rien */ }
     bVoix.hidden = false; majVoix();
     bVoix.onclick = function () {
-      voixOn = !voixOn; majVoix();
-      try { localStorage.setItem('moyen-age-voix', voixOn ? '1' : '0'); } catch (e) { /* rien */ }
-      if (voixOn) dire(texteEnCours()); else taire();
+      if (tutoOuvert) { fermerTuto(true); return; }      // le bouton qui brille pendant le mode d'emploi : « avec la voix »
+      if (attenteGeste) { reprendre(); return; }         // la voix attendait ce clic pour parler
+      reglerVoix(!voixOn);
     };
     window.addEventListener('pagehide', taire);
   }
@@ -532,6 +651,7 @@
     });
     document.documentElement.classList.add('pret');
     if (!O.Enfant.connu() && !revision) ouvrirAccueil();
+    else if (!revision && !tutoVu()) ouvrirTuto(!Progres.dernierPas());
   }
   var titreSite = O.nu(C.meta.titre);
   document.title = titreSite; $('#haut').textContent = titreSite;

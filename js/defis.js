@@ -30,7 +30,11 @@
       retour: function (t, classe) { var r = q('.defi__retour'); r.className = 'defi__retour' + (classe ? ' ' + classe : ''); r.innerHTML = t ? fmt(t) : ''; },
       compte: function (t) { q('.defi__compte').textContent = t || ''; },
       suite: function (label, fn) { bSuite.hidden = false; bSuite.textContent = label; bSuite.onclick = function () { bSuite.hidden = true; fn(); }; setTimeout(function () { try { bSuite.focus({ preventScroll: true }); } catch (e) { /* rien */ } }, 30); },
-      cacherSuite: function () { bSuite.hidden = true; }
+      cacherSuite: function () { bSuite.hidden = true; },
+      // la voix réagit (si elle est allumée) : 'bravo', 'presque', 'dommage' ou 'sceau'
+      reagir: function (sorte) { if (ctx.reagir && box.classList.contains('on')) ctx.reagir(sorte); },
+      // après une erreur sur la question en cours : « Presque ! » la première fois, puis « Dommage, essaie encore ! »
+      erreur: function (n) { this.reagir(n <= 1 ? 'presque' : 'dommage'); }
     };
 
     var gagne = false;
@@ -47,6 +51,7 @@
         window.gsap.fromTo(ui.corps.querySelector('.cire'), { scale: 2.6, rotation: -28, opacity: 0 }, { scale: 1, rotation: -6, opacity: 1, duration: 0.7, ease: 'back.out(1.6)' });
         window.gsap.from(ui.corps.querySelectorAll('.reussite p'), { y: 16, opacity: 0, duration: 0.6, stagger: 0.09, delay: 0.25, ease: 'power3.out' });
       }
+      ui.reagir('sceau');
     }
 
     var jeu = TYPES[d.type](d, ui, finir, { U: U, couche: ctx.couche, gagner: gagner }) || {};
@@ -79,11 +84,13 @@
     var canon = it.reponses[0];
     var nuCanon = canon.replace(/^(le|la|les|une|un|des) |^l'/i, '');
 
-    function juste(etat, forme) {
+    // sorte : la réaction de la voix ; par défaut « Bravo » si c'est exact, « Presque » s'il y a une petite faute d'orthographe
+    function juste(etat, forme, sorte) {
       inp.disabled = true; b.disabled = true;
       var msg = etat === 'exact' ? U.exact : gabarit(U.presque, { forme: forme });
       if (it.complet) msg += ' ' + it.complet;
       ui.retour(msg, 'ok');
+      ui.reagir(sorte || (etat === 'exact' ? 'bravo' : 'presque'));
       quandJuste(forme);
     }
     function qcm() {
@@ -95,8 +102,8 @@
       props.forEach(function (p) {
         var c = el('button', 'btn btn--choix'); c.type = 'button'; c.textContent = p;
         c.onclick = function () {
-          if (p === canon) { z.querySelectorAll('button').forEach(function (x) { x.disabled = true; }); c.classList.add('juste'); juste('presque', canon); }
-          else { c.disabled = true; c.classList.add('faux'); }
+          if (p === canon) { z.querySelectorAll('button').forEach(function (x) { x.disabled = true; }); c.classList.add('juste'); juste('presque', canon, 'bravo'); }
+          else { c.disabled = true; c.classList.add('faux'); ui.reagir('dommage'); }
         };
         z.appendChild(c);
       });
@@ -106,9 +113,11 @@
       var r = O.juger(inp.value, it);
       if (r.etat === 'vide') { inp.focus({ preventScroll: true }); return; }
       if (r.etat === 'exact' || r.etat === 'presque') { juste(r.etat, r.forme); return; }
-      if (r.etat === 'piege') { ui.retour(r.message, 'indice'); inp.select(); return; }
-      if (opts.autre) { var a = opts.autre(inp.value); if (a) { ui.retour(gabarit(U.autreLieu, { forme: a }), 'indice'); inp.select(); return; } }
+      // piège ou nom d'une autre partie : c'est presque ça
+      if (r.etat === 'piege') { ui.retour(r.message, 'indice'); ui.reagir('presque'); inp.select(); return; }
+      if (opts.autre) { var a = opts.autre(inp.value); if (a) { ui.retour(gabarit(U.autreLieu, { forme: a }), 'indice'); ui.reagir('presque'); inp.select(); return; } }
       essais++;
+      ui.erreur(essais);
       if (essais === 1) { ui.retour(U.pasTout + ' ' + gabarit(U.indice1, { indice: it.indice }), 'indice'); }
       else if (essais === 2 && !it.nombre) {
         ui.retour(gabarit(U.indice2, { debut: nuCanon.slice(0, nuCanon.length > 5 ? 2 : 1), n: nuCanon.replace(/[^a-zA-Zà-ÿœ]/g, '').length }), 'indice');
@@ -136,7 +145,7 @@
         b.onclick = function () {
           if (k === qn.bon) {
             zone.querySelectorAll('button').forEach(function (y) { y.disabled = true; });
-            b.classList.add('juste'); ui.retour(qn.ok, 'ok');
+            b.classList.add('juste'); ui.retour(qn.ok, 'ok'); ui.reagir('bravo');
             var dernier = i === n - 1 && !d.suite;
             ui.suite(dernier ? U.termine : U.suivante, function () {
               i++;
@@ -147,6 +156,7 @@
             var ind = qn.indices || [];
             ui.retour(U.pasTout + ' ' + (ind[Math.min(essais, ind.length - 1)] || U.essaieEncore), 'indice');
             essais++;
+            ui.erreur(essais);
           }
         };
         zone.appendChild(b);
@@ -178,12 +188,13 @@
       if (k === qn.bon) {
         verrou = true; b.classList.remove('aide'); b.classList.add('juste');
         if (o.etq[k]) o.etq[k].classList.add('on');
-        ui.retour(qn.ok, 'ok');
+        ui.retour(qn.ok, 'ok'); ui.reagir('bravo');
         ui.suite(i === n - 1 ? U.termine : U.suivante, function () { i++; if (i < n) poser(); else { nettoyer(); finir(); } });
       } else {
         essais++;
         b.classList.remove('non'); void b.offsetWidth; b.classList.add('non');
         ui.retour(d.lieux[k] + ' ' + gabarit(U.indice1, { indice: qn.indice }), 'indice');
+        ui.erreur(essais);
         if (essais >= 3) btns[qn.bon].classList.add('aide');
       }
     }
@@ -259,11 +270,12 @@
         if (k === prochain) {
           b.classList.add('juste'); b.disabled = true; b.firstChild.textContent = prochain + 1; b.style.order = prochain;
           prochain++;
-          if (prochain === n) { ui.retour(d.ok, 'ok'); ui.suite(U.termine, finir); }
+          if (prochain === n) { ui.retour(d.ok, 'ok'); ui.reagir('bravo'); ui.suite(U.termine, finir); }
           else ui.retour(U.ordreOk, 'ok');
         } else {
           b.classList.remove('non'); void b.offsetWidth; b.classList.add('non');
           ui.retour(d.indices[Math.min(essais, d.indices.length - 1)], 'indice'); essais++;
+          ui.erreur(essais);
         }
       };
       zone.appendChild(b);
