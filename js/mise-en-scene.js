@@ -44,6 +44,12 @@
       points: { lance: [62, 44] } },
     banquet: { type: 'image', src: 'medias/banquet.webp',
       points: { troubadour: [72, 40], fou: [89, 41], echecs: [81, 37, 'bas'], seigneur: [10, 37] } },
+    ville: { type: 'image', src: 'medias/ville.webp',
+      points: { remparts: [67, 66], porte: [44.7, 60], cathedrale: [25, 12], abbaye: [72, 40], chateau: [55.5, 9], faubourgs: [14, 74], foire: [66, 80], paysans: [41, 84] },
+      cibles: { cathedrale: [25, 30], chateau: [55.5, 17], abbaye: [72, 47], porte: [44.7, 72], remparts: [66, 68], faubourgs: [14, 80] } },
+    rue: { type: 'image', src: 'medias/rue.webp',
+      points: { echoppe: [37, 38], barbier: [8, 46], tailleur: [25, 51], cordonnier: [36, 50], apothicaire: [91, 52], bouchere: [75, 54],
+        tavernier: [66, 50], marche: [60, 46], marchande: [52.5, 62, 'bas'] } },
     soir: { type: 'image', src: 'medias/seigneurie.webp', classe: 'soir', alt: 'soir' }
   };
 
@@ -193,7 +199,28 @@
     'che-14': { s: 'tournoi', cam: [82, 50, 2.4] },
     'che-defi-vraifaux': { s: 'tournoi', cam: [50, 38, 1.05] },
 
-    /* 8. Le grand défi */
+    /* 8. La ville */
+    'ville-titre': { s: 'ville', cam: [50, 50, 1] },
+    'vil-1': { s: 'ville', cam: [40, 78, 1.9], et: ['paysans'] },
+    'vil-2': { s: 'ville', cam: [50, 46, 1.15] },
+    'vil-3': { s: 'ville', cam: [52, 62, 1.7], et: ['remparts', 'porte'] },
+    'vil-4': { s: 'ville', cam: [27, 26, 2.1], et: ['cathedrale'] },
+    'vil-5': { s: 'ville', cam: [72, 40, 2], et: ['abbaye'] },
+    'vil-6': { s: 'ville', cam: [56, 16, 2.3], et: ['chateau'] },
+    'vil-7': { s: 'ville', cam: [18, 74, 2], et: ['faubourgs'] },
+    'vil-defi-lieux': { s: 'ville', cam: FIT_SAISIE },
+    'vil-8': { s: 'rue', cam: [50, 50, 1], et: ['echoppe'] },
+    'vil-9': { s: 'rue', cam: [28, 50, 1.5] },
+    'vil-10': { s: 'rue', cam: [17, 52, 2], et: ['barbier', 'tailleur'] },
+    'vil-11': { s: 'rue', cam: [63, 50, 1.2], et: ['cordonnier', 'apothicaire'] },
+    'vil-12': { s: 'rue', cam: [64, 54, 1.7], et: ['bouchere', 'marchande'] },
+    'vil-13': { s: 'rue', cam: [66, 48, 2], et: ['tavernier'] },
+    'vil-defi-metiers': { s: 'rue', cam: [50, 38, 1.05] },
+    'vil-14': { s: 'rue', cam: [56, 46, 2.2], et: ['marche'] },
+    'vil-15': { s: 'ville', cam: [70, 78, 2], et: ['foire'] },
+    'vil-defi-marche': { s: 'ville', cam: [50, 38, 1.05] },
+
+    /* 9. Le grand défi */
     'final-titre': { s: 'soir', cam: [50, 50, 1] },
     'fin-1': { s: 'soir', cam: [52, 44, 1.15] },
     'fin-defi': { s: 'soir', cam: [50, 36, 1.05] }

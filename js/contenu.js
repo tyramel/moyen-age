@@ -202,12 +202,38 @@ window.CONTENU = {
       ]
     },
 
-    /* ============================ 8. LE GRAND DÉFI =================== */
+    /* ============================ 8. LA VILLE ======================== */
     {
-      id: "final", numero: "8", titre: "Le grand défi",
+      id: "ville", numero: "8", titre: "La ville",
+      accroche: "Remparts, échoppes et jours de marché",
+      pas: [
+        { id: "vil-1", t: "Jusqu'ici, nous sommes restés à la campagne. Au Moyen Âge, c'est là que vivent environ neuf personnes sur dix. Mais un jour de marché, suivons les paysans qui partent vendre leurs produits en ville." },
+        { id: "vil-2", t: "À partir du XIe siècle, les villes grandissent. Tu te souviens de la charrue à versoir et de l'assolement ? Les récoltes sont meilleures, il y a plus d'habitants, et le commerce se développe. Beaucoup viennent en ville pour travailler et commercer." },
+        { id: "vil-3", t: "Comme le château, la ville se protège. Elle est entourée de {{remparts}}, avec des tours. On y entre par une {{porte fortifiée}}, surveillée par des gardes. La nuit, on la ferme." },
+        { id: "vil-4", t: "Au-dessus des toits se dresse la [[cathédrale]] : la grande église de la ville, où siège l'{{évêque}}, le chef des prêtres de la région." },
+        { id: "vil-5", t: "Voici l'[[abbaye]] : un monastère où vivent des {{moines}} ou des {{moniales}}, des religieuses. Ils y prient et y travaillent, autour d'un jardin entouré d'une galerie : le cloître." },
+        { id: "vil-6", t: "Tout en haut, un {{château}}. Beaucoup de villes en ont un : celui d'un seigneur, d'un comte ou du roi." },
+        { id: "vil-7", t: "La ville grandit tellement qu'elle déborde de ses murs. Les maisons construites dehors, le long des routes, forment les {{faubourgs}}." },
+        { id: "vil-defi-lieux", defi: "villeLieux" },
+        { id: "vil-8", t: "Entrons dans une rue. Elle est étroite, et les maisons à pans de bois se serrent les unes contre les autres. En bas, les {{échoppes}} : de petites boutiques ouvertes sur la rue." },
+        { id: "vil-9", t: "Dans son échoppe, l'[[artisan]] fabrique des objets à la main, puis il les vend. Il travaille et il vend au même endroit." },
+        { id: "vil-10", t: "Voici le {{barbier}} : il rase les barbes, et il soigne aussi ses clients. À côté, le {{tailleur}} coud des vêtements." },
+        { id: "vil-11", t: "Le {{cordonnier}} fabrique et répare les chaussures en cuir. En face, l'{{apothicaire}} prépare et vend des médicaments, souvent avec des plantes." },
+        { id: "vil-12", t: "Les femmes travaillent aussi. La {{bouchère}} vend de la viande de bœuf, de porc ou de mouton. Plus loin, une {{marchande}} vend toutes sortes de marchandises. À Paris, certains métiers sont tenus par des femmes, comme celui de fileuse de soie." },
+        { id: "vil-13", t: "Le {{tavernier}} sert à boire, surtout du vin. Ailleurs en ville, le {{relieur}} relie les livres avec du cuir, et l'{{orfèvre}} fabrique des objets en or et en argent." },
+        { id: "vil-defi-metiers", defi: "metiers" },
+        { id: "vil-14", t: "Au bout de la rue, la place du [[marché]]. Chaque semaine, les habitants y achètent et y vendent des produits. Les paysans des environs y apportent leurs œufs et leurs légumes." },
+        { id: "vil-15", t: "Quelques fois dans l'année, il y a une [[foire]] : un très grand marché. Des marchands viennent de régions lointaines, avec des tissus et des épices. Les plus célèbres sont les foires de Champagne." },
+        { id: "vil-defi-marche", defi: "marcheFoire" }
+      ]
+    },
+
+    /* ============================ 9. LE GRAND DÉFI =================== */
+    {
+      id: "final", numero: "9", titre: "Le grand défi",
       accroche: "Tout ce que tu sais maintenant",
       pas: [
-        { id: "fin-1", t: "Tu as fait le tour de la seigneurie. Voyons ce que tu as retenu. Si tu fais une petite faute en écrivant, je te montrerai la bonne orthographe." },
+        { id: "fin-1", t: "Tu as fait le tour de la seigneurie, puis de la ville. Voyons ce que tu as retenu. Si tu fais une petite faute en écrivant, je te montrerai la bonne orthographe." },
         { id: "fin-defi", defi: "final" },
         { id: "fin-bilan", bilan: true }
       ]
@@ -246,7 +272,15 @@ window.CONTENU = {
     ecuyer: { page: "le page", ecuyer: "l'écuyer", armes: "l'équipement du chevalier" },
     adoubement: { epee: "l'épée", chevalier: "le nouveau chevalier" },
     tournoi: { lance: "la lance" },
-    banquet: { troubadour: "un troubadour", fou: "le « fou »", echecs: "les échecs", seigneur: "le seigneur" }
+    banquet: { troubadour: "un troubadour", fou: "le « fou »", echecs: "les échecs", seigneur: "le seigneur" },
+    ville: {
+      remparts: "les remparts", porte: "la porte fortifiée", cathedrale: "[[la cathédrale]]", abbaye: "[[l'abbaye]]",
+      chateau: "le château", faubourgs: "les faubourgs", foire: "[[la foire]]", paysans: "des paysans"
+    },
+    rue: {
+      echoppe: "une échoppe", barbier: "le barbier", tailleur: "le tailleur", cordonnier: "le cordonnier",
+      apothicaire: "l'apothicaire", bouchere: "la bouchère", tavernier: "le tavernier", marche: "[[le marché]]", marchande: "une marchande"
+    }
   },
 
   /* ------------------------------------------------------------------
@@ -271,6 +305,8 @@ window.CONTENU = {
     adoubement: "Dans une chapelle, un seigneur remet une épée à un jeune homme agenouillé. Un prêtre le bénit.",
     tournoi: "Un tournoi : deux chevaliers à cheval foncent l'un vers l'autre, la lance en avant, devant une tribune de spectateurs.",
     banquet: "Un banquet : le seigneur et ses invités à table, un troubadour qui chante en jouant de la harpe, un « fou » qui jongle et un jeu d'échecs.",
+    ville: "Une ville du Moyen Âge vue d'en haut : des remparts avec des tours, une porte fortifiée, une grande cathédrale à deux tours, une abbaye avec son cloître, un château sur la colline, des maisons hors des murs et une foire sous des tentes dans un pré.",
+    rue: "Une rue étroite aux maisons à pans de bois. Dans les échoppes : un barbier qui rase un client, un tailleur qui coud, un cordonnier, un apothicaire et ses pots, une bouchère et un tavernier. Au bout de la rue, le marché et les tours de la cathédrale.",
     soir: "La seigneurie au coucher du soleil."
   },
 
@@ -483,10 +519,59 @@ window.CONTENU = {
       bravo: "Tu ne tomberas plus dans les pièges."
     },
 
+    villeLieux: {
+      type: "nommer", titre: "Défi : nomme les lieux de la ville",
+      consigne: "Touche un numéro, puis écris le nom de ce lieu, avec ou sans « le » ou « la ».",
+      objectif: 4,
+      objectifTexte: "Trouve au moins 4 noms sur 6 pour gagner le sceau de la ville.",
+      items: [
+        { lieu: "cathedrale", reponses: ["la cathédrale", "cathédrale"], indice: "La grande église de la ville, où siège l'évêque." },
+        { lieu: "chateau", reponses: ["le château", "château", "château fort", "le château fort", "chateau fort"], indice: "Il se dresse tout en haut, sur la colline." },
+        { lieu: "abbaye", reponses: ["l'abbaye", "abbaye", "monastère", "le monastère"], indice: "Des moines ou des moniales y vivent, autour d'un cloître." },
+        { lieu: "porte", reponses: ["la porte fortifiée", "porte fortifiée", "la porte", "porte"], indice: "On entre dans la ville par là, entre deux tours." },
+        { lieu: "remparts", reponses: ["les remparts", "remparts", "rempart", "murailles", "muraille", "mur d'enceinte", "le mur d'enceinte", "enceinte"], indice: "Le grand mur qui entoure la ville, comme au château." },
+        { lieu: "faubourgs", reponses: ["les faubourgs", "faubourgs", "faubourg"], indice: "Les maisons construites hors des murs. Le mot commence par « fau »." }
+      ],
+      bravo: "Tu sais lire le plan d'une ville du Moyen Âge."
+    },
+
+    metiers: {
+      type: "choix", titre: "Défi : qui fait quoi ?",
+      consigne: "Lis ce que fait chaque personne et trouve son métier.",
+      questions: [
+        { q: "Il fabrique et répare les chaussures en cuir.", choix: ["le cordonnier", "le tailleur", "l'orfèvre"], bon: 0,
+          ok: "Oui, c'est le cordonnier.", indices: ["Le tailleur coud des vêtements. Et les chaussures ?"] },
+        { q: "Il prépare et vend des médicaments.", choix: ["le barbier", "l'apothicaire", "le tavernier"], bon: 1,
+          ok: "Oui, l'apothicaire. Il utilise souvent des plantes.", indices: ["Le barbier soigne aussi, mais ce n'est pas lui qui prépare les médicaments."] },
+        { q: "Il rase les barbes et soigne ses clients.", choix: ["le tailleur", "le barbier", "le relieur"], bon: 1,
+          ok: "Oui, le barbier. Son nom vient de « barbe ».", indices: ["Écoute bien le nom des métiers : l'un d'eux ressemble à « barbe »."] },
+        { q: "Elle vend de la viande de bœuf, de porc ou de mouton.", choix: ["la marchande", "la bouchère", "l'apothicaire"], bon: 1,
+          ok: "Oui, la bouchère.", indices: ["La marchande vend toutes sortes de choses. Laquelle vend seulement de la viande ?"] },
+        { q: "Il fabrique des objets en or et en argent.", choix: ["le cordonnier", "le relieur", "l'orfèvre"], bon: 2,
+          ok: "Oui, l'orfèvre. Il travaille les métaux précieux.", indices: ["Le cordonnier et le relieur travaillent le cuir."] },
+        { q: "Il sert à boire, surtout du vin.", choix: ["le tavernier", "le barbier", "le tailleur"], bon: 0,
+          ok: "Oui, le tavernier, dans sa taverne.", indices: ["Il travaille dans une taverne."] }
+      ],
+      bravo: "Tu connais les métiers de la ville."
+    },
+
+    marcheFoire: {
+      type: "choix", titre: "Défi : marché ou foire ?",
+      consigne: "Lis chaque phrase et choisis de quoi elle parle.",
+      choixCommuns: ["le marché", "la foire"],
+      questions: [
+        { q: "Il a lieu chaque semaine.", bon: 0, ok: "Oui, c'est le marché.", indices: ["La foire n'a lieu que quelques fois dans l'année."] },
+        { q: "Des marchands viennent de régions lointaines.", bon: 1, ok: "Oui, c'est la foire.", indices: ["Lequel des deux est un très grand marché ?"] },
+        { q: "C'est un très grand marché, quelques fois dans l'année.", bon: 1, ok: "Oui, c'est la foire.", indices: ["Le marché, lui, a lieu chaque semaine."] },
+        { q: "Les paysans des environs y vendent leurs œufs et leurs légumes.", bon: 0, ok: "Oui, c'est le marché, chaque semaine.", indices: ["Pas besoin de venir de loin pour vendre quelques œufs."] }
+      ],
+      bravo: "Tu ne confondras plus le marché et la foire."
+    },
+
     final: {
       type: "saisie", titre: "Le grand défi",
-      consigne: "Quinze questions sur toute la leçon. Écris le mot qui manque. Prends ton temps.",
-      objectif: 12,
+      consigne: "Dix-huit questions sur toute la leçon. Écris le mot qui manque. Prends ton temps.",
+      objectif: 14,
       items: [
         { q: "Tout ce qui appartient au seigneur, c'est la…", reponses: ["seigneurie"], rouge: true, indice: "Le mot ressemble à « seigneur »." },
         { q: "Les terres cultivées pour le seigneur, ce sont les…", reponses: ["réserves", "réserve"], rouge: true, indice: "Ce sont les grands champs au pied du château." },
@@ -502,6 +587,9 @@ window.CONTENU = {
         { q: "La personne liée au seigneur par un serment de fidélité, c'est le…", reponses: ["vassal"], indice: "Au pluriel : des vassaux." },
         { q: "Le morceau de terre que reçoit le vassal, c'est le…", reponses: ["fief"], indice: "Un tout petit mot de quatre lettres, qui commence et finit par un f." },
         { q: "On devient chevalier par la cérémonie de l'…", reponses: ["adoubement"], indice: "On dit que le chevalier est « adoubé »." },
+        { q: "La grande église de la ville, où siège l'évêque, c'est la…", reponses: ["cathédrale"], rouge: true, indice: "Elle se dresse au-dessus des toits de la ville." },
+        { q: "Une personne qui fabrique des objets à la main et les vend dans son échoppe, c'est un…", reponses: ["artisan"], rouge: true, indice: "Le cordonnier et l'orfèvre en sont." },
+        { q: "Un très grand marché, quelques fois dans l'année, avec des marchands venus de loin, c'est une…", reponses: ["foire"], rouge: true, indice: "Les plus célèbres sont en Champagne." },
         { q: "Le Moyen Âge commence en 476. En quelle année se termine-t-il ?", reponses: ["1492"], nombre: true, leurres: ["1453", "1789"], indice: "C'est l'année où Christophe Colomb arrive en Amérique." }
       ],
       bravo: "Tu as relevé le grand défi."
@@ -520,7 +608,8 @@ window.CONTENU = {
       "Les paysans, serfs ou vilains, paient un [[loyer]] et des impôts pour utiliser le [[four]], le [[moulin]] ou le [[pressoir]]. Ils doivent aussi des [[corvées]].",
       "La charrue à roues et à versoir et l'assolement triennal aident à mieux cultiver la terre.",
       "Le château fort est une forteresse, du fossé jusqu'au donjon.",
-      "Le seigneur a des vassaux, qui reçoivent un fief. Les chevaliers combattent pour lui. On devient chevalier par l'adoubement."
+      "Le seigneur a des vassaux, qui reçoivent un fief. Les chevaliers combattent pour lui. On devient chevalier par l'adoubement.",
+      "En ville, protégée par ses remparts, s'élèvent la [[cathédrale]] et l'[[abbaye]]. Les [[artisans]] travaillent dans leurs échoppes. On achète au [[marché]] chaque semaine, et à la [[foire]] quelques fois par an."
     ],
     idee: "Et garde une dernière idée, elle te servira souvent en histoire : celui qui possède la terre a du pouvoir sur ceux qui y vivent.",
     sceaux: "Tes sceaux",

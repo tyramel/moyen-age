@@ -400,6 +400,12 @@ noscript { position: fixed; inset: 0; z-index: 99; display: grid; place-items: c
   .voix { width: 44px; height: 44px; bottom: calc(clamp(22px, 6vh, 60px) + 60px); }
   .bandeau-revision { font-size: .85rem; top: calc(var(--barre) + 2px); }
 }
+/* téléphone : neuf sceaux et le titre doivent tenir sur une ligne */
+@media (max-width: 520px) {
+  .barre__titre { min-width: 0; flex: 1 1 auto; margin-right: 8px; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barre__sceaux { flex: none; gap: 4px; }
+  .sceau-btn { width: 27px; height: 27px; font-size: .8rem; }
+}
 @media (max-height: 640px) {
   .defi__consigne { display: none; }
   .legende { bottom: 22px; }
