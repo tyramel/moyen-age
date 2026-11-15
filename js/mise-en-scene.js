@@ -48,8 +48,10 @@
       points: { remparts: [67, 66], porte: [44.7, 60], cathedrale: [25, 12], abbaye: [72, 40], chateau: [55.5, 9], faubourgs: [14, 74], foire: [66, 80], paysans: [41, 84] },
       cibles: { cathedrale: [25, 30], chateau: [55.5, 17], abbaye: [72, 47], porte: [44.7, 72], remparts: [66, 68], faubourgs: [14, 80] } },
     rue: { type: 'image', src: 'medias/rue.webp',
-      points: { echoppe: [37, 38], barbier: [8, 46], tailleur: [25, 51], cordonnier: [36, 50], apothicaire: [91, 52], bouchere: [75, 54],
-        tavernier: [66, 50], marche: [60, 46], marchande: [52.5, 62, 'bas'] } },
+      points: { echoppe: [25, 42], barbier: [10, 53], tailleur: [23, 56], cordonnier: [34, 58.5], orfevre: [41.6, 54], apothicaire: [72.7, 53],
+        bouchere: [80, 55], relieur: [83.6, 67.5], tavernier: [93, 57], marche: [61.4, 48], marchande: [62.5, 57, 'bas'] } },
+    foire: { type: 'image', src: 'medias/foire.webp',
+      points: { tissus: [15, 64], epices: [80, 76], lointain: [81, 45] } },
     soir: { type: 'image', src: 'medias/seigneurie.webp', classe: 'soir', alt: 'soir' }
   };
 
@@ -214,10 +216,10 @@
     'vil-10': { s: 'rue', cam: [17, 52, 2], et: ['barbier', 'tailleur'] },
     'vil-11': { s: 'rue', cam: [63, 50, 1.2], et: ['cordonnier', 'apothicaire'] },
     'vil-12': { s: 'rue', cam: [64, 54, 1.7], et: ['bouchere', 'marchande'] },
-    'vil-13': { s: 'rue', cam: [66, 48, 2], et: ['tavernier'] },
+    'vil-13': { s: 'rue', cam: [66, 54, 1.12], et: ['tavernier', 'relieur', 'orfevre'] },
     'vil-defi-metiers': { s: 'rue', cam: [50, 38, 1.05] },
     'vil-14': { s: 'rue', cam: [56, 46, 2.2], et: ['marche'] },
-    'vil-15': { s: 'ville', cam: [70, 78, 2], et: ['foire'] },
+    'vil-15': { s: 'foire', cam: [50, 50, 1], et: ['tissus', 'epices', 'lointain'] },
     'vil-defi-marche': { s: 'ville', cam: [50, 38, 1.05] },
 
     /* 9. Le grand défi */

@@ -220,7 +220,7 @@ window.CONTENU = {
         { id: "vil-10", t: "Voici le {{barbier}} : il rase les barbes, et il soigne aussi ses clients. À côté, le {{tailleur}} coud des vêtements." },
         { id: "vil-11", t: "Le {{cordonnier}} fabrique et répare les chaussures en cuir. En face, l'{{apothicaire}} prépare et vend des médicaments, souvent avec des plantes." },
         { id: "vil-12", t: "Les femmes travaillent aussi. La {{bouchère}} vend de la viande de bœuf, de porc ou de mouton. Plus loin, une {{marchande}} vend toutes sortes de marchandises. À Paris, certains métiers sont tenus par des femmes, comme celui de fileuse de soie." },
-        { id: "vil-13", t: "Le {{tavernier}} sert à boire, surtout du vin. Ailleurs en ville, le {{relieur}} relie les livres avec du cuir, et l'{{orfèvre}} fabrique des objets en or et en argent." },
+        { id: "vil-13", t: "Le {{tavernier}} sert à boire, surtout du vin. À côté, le {{relieur}} relie les livres avec du cuir. En face, l'{{orfèvre}} fabrique des objets en or et en argent." },
         { id: "vil-defi-metiers", defi: "metiers" },
         { id: "vil-14", t: "Au bout de la rue, la place du [[marché]]. Chaque semaine, les habitants y achètent et y vendent des produits. Les paysans des environs y apportent leurs œufs et leurs légumes." },
         { id: "vil-15", t: "Quelques fois dans l'année, il y a une [[foire]] : un très grand marché. Des marchands viennent de régions lointaines, avec des tissus et des épices. Les plus célèbres sont les foires de Champagne." },
@@ -279,8 +279,10 @@ window.CONTENU = {
     },
     rue: {
       echoppe: "une échoppe", barbier: "le barbier", tailleur: "le tailleur", cordonnier: "le cordonnier",
-      apothicaire: "l'apothicaire", bouchere: "la bouchère", tavernier: "le tavernier", marche: "[[le marché]]", marchande: "une marchande"
-    }
+      orfevre: "l'orfèvre", apothicaire: "l'apothicaire", bouchere: "la bouchère", relieur: "le relieur", tavernier: "le tavernier",
+      marche: "[[le marché]]", marchande: "une marchande"
+    },
+    foire: { tissus: "des tissus", epices: "des épices", lointain: "un marchand venu de loin" }
   },
 
   /* ------------------------------------------------------------------
@@ -306,7 +308,8 @@ window.CONTENU = {
     tournoi: "Un tournoi : deux chevaliers à cheval foncent l'un vers l'autre, la lance en avant, devant une tribune de spectateurs.",
     banquet: "Un banquet : le seigneur et ses invités à table, un troubadour qui chante en jouant de la harpe, un « fou » qui jongle et un jeu d'échecs.",
     ville: "Une ville du Moyen Âge vue d'en haut : des remparts avec des tours, une porte fortifiée, une grande cathédrale à deux tours, une abbaye avec son cloître, un château sur la colline, des maisons hors des murs et une foire sous des tentes dans un pré.",
-    rue: "Une rue étroite aux maisons à pans de bois. Dans les échoppes : un barbier qui rase un client, un tailleur qui coud, un cordonnier, un apothicaire et ses pots, une bouchère et un tavernier. Au bout de la rue, le marché et les tours de la cathédrale.",
+    rue: "Une rue étroite aux maisons à pans de bois. Dans les échoppes : un barbier qui rase un client, un tailleur qui coud, un cordonnier, un orfèvre et ses coupes d'or, un apothicaire et ses pots, une bouchère, un relieur qui coud un livre et un tavernier qui verse du vin. Au bout de la rue, le marché.",
+    foire: "Une foire dans un pré, devant les remparts d'une ville : un marchand mesure des tissus de toutes les couleurs, un marchand venu d'Orient pèse des épices, des mulets chargés de ballots arrivent entre les tentes.",
     soir: "La seigneurie au coucher du soleil."
   },
 
