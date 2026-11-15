@@ -613,6 +613,8 @@ window.CONTENU = {
     ],
     idee: "Et garde une dernière idée, elle te servira souvent en histoire : celui qui possède la terre a du pouvoir sur ceux qui y vivent.",
     sceaux: "Tes sceaux",
+    allerDefi: "Il manque un défi pour ce sceau : « {titre} ». Touche pour y aller.",
+    allerChapitre: "Revoir le chapitre {numero} : {titre}",
     recommencer: "Tout recommencer",
     credits: "Textes d'après le programme d'histoire de CM1. Images créées avec une intelligence artificielle (Krea), puis vérifiées une à une."
   },
@@ -629,7 +631,7 @@ window.CONTENU = {
     date: "le {date}",
     enregistrer: "Enregistrer le diplôme",
     alt: "Ton diplôme du Moyen Âge, avec ton prénom et les sceaux que tu as gagnés.",
-    note: "Les sceaux gagnés s'impriment en rouge. Il en manque ? Les défis t'attendent.",
+    note: "Les sceaux gagnés s'impriment en rouge. Il en manque ? Touche un sceau gris, plus haut : il t'emmène au défi qui manque.",
     fichier: "diplome-moyen-age"
   },
 

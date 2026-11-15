@@ -147,6 +147,8 @@
             zone.querySelectorAll('button').forEach(function (y) { y.disabled = true; });
             b.classList.add('juste'); ui.retour(qn.ok, 'ok'); ui.reagir('bravo');
             var dernier = i === n - 1 && !d.suite;
+            // la dernière bonne réponse suffit : le sceau est gagné même si l'on défile sans toucher « Terminer »
+            if (dernier) x.gagner();
             ui.suite(dernier ? U.termine : U.suivante, function () {
               i++;
               if (i < n) poser(); else if (d.suite) TYPES.saisie(d.suite, ui, finir, x); else finir();
@@ -189,6 +191,7 @@
         verrou = true; b.classList.remove('aide'); b.classList.add('juste');
         if (o.etq[k]) o.etq[k].classList.add('on');
         ui.retour(qn.ok, 'ok'); ui.reagir('bravo');
+        if (i === n - 1) x.gagner();
         ui.suite(i === n - 1 ? U.termine : U.suivante, function () { i++; if (i < n) poser(); else { nettoyer(); finir(); } });
       } else {
         essais++;
@@ -252,6 +255,7 @@
       ui.q(it.q); ui.retour(''); ui.cacherSuite();
       var leurres = n > 2 ? [d.items[(i + 2) % n].reponses[0], d.items[(i + 5) % n].reponses[0]] : [];
       champ(it, ui, U, function () {
+        if (i === n - 1) x.gagner();
         ui.suite(i === n - 1 ? U.termine : U.suivante, function () { i++; if (i < n) poser(); else finir(); });
       }, { leurres: leurres });
     }
@@ -270,7 +274,7 @@
         if (k === prochain) {
           b.classList.add('juste'); b.disabled = true; b.firstChild.textContent = prochain + 1; b.style.order = prochain;
           prochain++;
-          if (prochain === n) { ui.retour(d.ok, 'ok'); ui.reagir('bravo'); ui.suite(U.termine, finir); }
+          if (prochain === n) { ui.retour(d.ok, 'ok'); ui.reagir('bravo'); x.gagner(); ui.suite(U.termine, finir); }
           else ui.retour(U.ordreOk, 'ok');
         } else {
           b.classList.remove('non'); void b.offsetWidth; b.classList.add('non');

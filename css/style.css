@@ -368,7 +368,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .diplome__pied { display: flex; flex-wrap: wrap; gap: .8em 1.6em; align-items: center; justify-content: space-between; }
 .diplome__note { margin: 0; font-size: .95rem; opacity: .8; max-width: 30em; }
 .diplome .btn { text-decoration: none; display: inline-flex; align-items: center; }
-.bilan__sceau { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 104px; text-align: center; font-size: .82rem; opacity: .45; }
+.bilan__sceau { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 104px; text-align: center; font: inherit; font-size: .82rem; opacity: .45;
+  background: none; border: 0; padding: 0; color: inherit; cursor: pointer; transition: opacity .2s; }
+.bilan__sceau:not(.gagne):hover, .bilan__sceau:not(.gagne):focus-visible { opacity: .8; }
+.bilan__sceau .cire { display: grid; }
 .bilan__sceau.gagne { opacity: 1; }
 .bilan__sceau .cire { width: 64px; font-size: 1.6rem; filter: grayscale(1) brightness(.7); }
 .bilan__sceau.gagne .cire { filter: none; }

@@ -418,8 +418,17 @@
     if (bilan.querySelector('.diplome__img')) dessinerDiplome();
     bilan.querySelectorAll('.bilan__sceau').forEach(function (s) {
       var ch = C.chapitres.find(function (c) { return c.id === s.getAttribute('data-ch'); });
-      s.classList.toggle('gagne', chapitreGagne(ch));
+      var g = chapitreGagne(ch), manque = g ? -1 : defiManquant(ch);
+      s.classList.toggle('gagne', g);
+      // un sceau gris emmène au premier défi qui manque dans ce chapitre
+      var titre = manque > -1 ? O.gabarit(C.bilan.allerDefi, { titre: O.nu(C.defis[PAS[manque].defi].titre) })
+        : O.gabarit(C.bilan.allerChapitre, { numero: ch.numero, titre: O.nu(ch.titre) });
+      s.title = titre; s.setAttribute('aria-label', titre);
+      s.onclick = function () { allerA(manque > -1 ? manque : debutChapitre[ch.id], true); };
     });
+  }
+  function defiManquant(ch) {
+    return PAS.findIndex(function (p) { return p.type === 'defi' && p.ch.id === ch.id && !Progres.a(p.defi); });
   }
   (function () {
     var B = C.bilan, h = '<div class="bilan__image"><img src="medias/seigneurie.webp" alt="' + C.alts.soir + '" loading="lazy"></div><div class="bilan__corps">';
@@ -428,7 +437,7 @@
     h += '</ul><p class="bilan__idee">' + fmt(B.idee) + '</p><p class="bilan__sceaux-titre">' + fmt(B.sceaux) + '</p><div class="bilan__sceaux">';
     var DIP = C.diplome;
     C.chapitres.forEach(function (ch) {
-      if (ch.numero) h += '<div class="bilan__sceau" data-ch="' + ch.id + '"><div class="cire" aria-hidden="true">' + ch.numero + '</div><span>' + fmt(ch.titre) + '</span></div>';
+      if (ch.numero) h += '<button type="button" class="bilan__sceau" data-ch="' + ch.id + '"><span class="cire" aria-hidden="true">' + ch.numero + '</span><span>' + fmt(ch.titre) + '</span></button>';
     });
     h += '</div><p class="bilan__sceaux-titre">' + DIP.section + '</p><div class="diplome"><img class="diplome__img" alt="' + DIP.alt + '">' +
       '<div class="diplome__pied"><p class="diplome__note">' + DIP.note + '</p><a class="btn" id="enregistrerDiplome" href="#">' + DIP.enregistrer + '</a></div></div>';
