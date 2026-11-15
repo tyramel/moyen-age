@@ -54,7 +54,9 @@
      On accepte : majuscules, accents, article devant le mot, espaces et tirets,
      et une ou deux lettres de travers selon la longueur du mot.
      On affiche toujours la bonne orthographe. */
-  var ARTICLES = /^(le|la|les|l'|l’|un|une|des|du|de la|de l'|de l’)\s*/;
+  // « les » avant « le », « une » avant « un » : sinon « les fiefs » devenait « s fiefs ».
+  // Un espace (ou une apostrophe) après l'article : « lance » ou « duc » gardent leurs premières lettres.
+  var ARTICLES = /^(?:(?:les|le|la|une|un|des|du|de la)\s+|(?:l|de l)['’]\s*)/;
   function sansAccents(s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, ''); }
   function norm(s) {
     return sansAccents(String(s).toLowerCase().trim()).replace(/œ/g, 'oe').replace(ARTICLES, '').replace(/[^a-z0-9]/g, '');
@@ -136,8 +138,13 @@
     return h.toString(36);
   }
   /* Un texte à lire, découpé là où il change selon l'enfant (l'année de naissance) */
+  // Une année sans enregistrement (les années proposées avancent avec le calendrier) : on lit la phrase sans année.
+  function phraseNaissance() {
+    var phrase = propre(perso('{naissance}')), F = window.VOIX_FICHIERS, P = (window.CONTENU && window.CONTENU.perso) || {};
+    return F && !F[cleVoix(phrase)] && P.naissanceSans ? propre(P.naissanceSans) : phrase;
+  }
   function decouperVoix(gab) {
-    return sansPrenom(gab).split(/(\{naissance\})/).map(function (x) { return x === '{naissance}' ? perso(x) : x; })
+    return sansPrenom(gab).split(/(\{naissance\})/).map(function (x) { return x === '{naissance}' ? phraseNaissance() : x; })
       .map(propre).filter(function (x) { return x; });
   }
   var Voix = {

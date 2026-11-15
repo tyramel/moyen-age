@@ -551,29 +551,13 @@
   /* ---------- 13. Lecture à voix haute ----------
      Un seul bouton : allumé, il lit le passage en cours, puis chaque nouveau passage.
      Chaque texte a son enregistrement (medias/voix/<clé>.mp3, liste dans js/voix.js).
-     Un texte sans enregistrement est lu par la voix de l'appareil. */
-  var bVoix = $('#voix'), synth = window.speechSynthesis, voixFr = null, voixOn = false;
+     Un texte sans enregistrement reste muet : pas de voix de l'appareil, trop différente de celle des enregistrements. */
+  var bVoix = $('#voix'), voixOn = false;
   var FICHIERS = window.VOIX_FICHIERS || {}, lecteur = new Audio(), file = [], tour = 0;
   lecteur.preload = 'auto';
-  function choisirVoix() {
-    var l = synth.getVoices().filter(function (v) { return /^fr([-_]|$)/i.test(v.lang); });
-    // les voix les plus naturelles d'abord : neuronales (Edge), premium ou améliorées (Apple), Google (Chrome)
-    function note(v) {
-      var n = v.name, s = /fr[-_]FR/i.test(v.lang) ? 1 : 0;
-      if (/Natural|Neural|Online/i.test(n)) s += 50;
-      else if (/Premium/i.test(n)) s += 40;
-      else if (/Enhanced|Amélioré/i.test(n)) s += 30;
-      else if (/Google/i.test(n)) s += 20;
-      if (/Compact|eSpeak/i.test(n)) s -= 10;
-      return s;
-    }
-    l.sort(function (a, b) { return note(b) - note(a); });
-    voixFr = l[0] || null;
-  }
   function taire() {
     tour++; file = [];
     try { lecteur.pause(); } catch (e) { /* rien */ }
-    if (synth) synth.cancel();
     bVoix.classList.remove('parle');
   }
   // morceaux : une liste de textes, lus l'un après l'autre
@@ -585,31 +569,20 @@
   }
   function suivant(t) {
     if (t !== tour) return;
-    if (!file.length) { bVoix.classList.remove('parle'); return; }
-    var texte = file.shift(), cle = O.Voix.cle(texte);
+    var cle = null;
+    // les textes pas encore enregistrés sont passés en silence
+    while (file.length && !FICHIERS[cle = O.Voix.cle(file.shift())]) { cle = null; }
+    if (!cle) { bVoix.classList.remove('parle'); return; }
     bVoix.classList.add('parle');
-    if (FICHIERS[cle]) {
-      lecteur.onended = function () { suivant(t); };
-      lecteur.onerror = function () { parlerAppareil(texte, t); };
-      lecteur.src = 'medias/voix/' + cle + '.mp3';
-      var pr = lecteur.play();
-      if (pr && pr.catch) pr.catch(function (err) {
-        if (t !== tour) return;
-        bVoix.classList.remove('parle');
-        if (err && err.name === 'NotAllowedError') bloque();
-      });
-    } else parlerAppareil(texte, t);
-  }
-  function parlerAppareil(texte, t) {
-    if (!synth || !window.SpeechSynthesisUtterance) { suivant(t); return; }
-    var u = new window.SpeechSynthesisUtterance(String(texte).replace(/[«»]/g, ''));
-    u.lang = 'fr-FR'; if (voixFr) u.voice = voixFr; u.rate = 0.92;
-    u.onend = function () { suivant(t); };
-    u.onerror = function (ev) {
-      if (ev && ev.error === 'not-allowed') { if (t === tour) { bVoix.classList.remove('parle'); bloque(); } return; }
-      suivant(t);
-    };
-    synth.speak(u);
+    lecteur.onended = function () { suivant(t); };
+    lecteur.onerror = function () { suivant(t); };
+    lecteur.src = 'medias/voix/' + cle + '.mp3';
+    var pr = lecteur.play();
+    if (pr && pr.catch) pr.catch(function (err) {
+      if (t !== tour) return;
+      bVoix.classList.remove('parle');
+      if (err && err.name === 'NotAllowedError') bloque();
+    });
   }
   /* Le navigateur refuse le son tant qu'on n'a ni cliqué ni appuyé sur une touche
      (la molette et le doigt qui glisse ne comptent pas). Si la voix était restée allumée
@@ -658,8 +631,7 @@
     bVoix.setAttribute('aria-label', voixOn ? C.ui.voixOff : C.ui.voix);
     bVoix.title = voixOn ? C.ui.voixOff : C.ui.voix;
   }
-  if (synth && window.SpeechSynthesisUtterance) { choisirVoix(); if (synth.addEventListener) synth.addEventListener('voiceschanged', choisirVoix); }
-  if (Object.keys(FICHIERS).length || (synth && window.SpeechSynthesisUtterance)) {
+  if (Object.keys(FICHIERS).length) {
     try { voixOn = localStorage.getItem('moyen-age-voix') === '1'; } catch (e) { /* rien */ }
     bVoix.hidden = false; majVoix();
     bVoix.onclick = function () {
