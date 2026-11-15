@@ -259,6 +259,8 @@
       defis[p.defi] = window.Defis.creer(p.defi, C.defis[p.defi], {
         C: C, couche: o, numero: p.ch.numero, reduit: reduit, dire: dire, reagir: reagir,
         fini: function (id) { Progres.gagner(id); },
+        // le grand défi est la dernière étape : sa fin invite à descendre au bilan et au diplôme
+        apres: PAS[PAS.length - 1] === p ? { texte: C.ui.versBilan, bouton: C.ui.voirBilan, aller: allerAuBilan } : null,
         premierSceau: function () { var r = premier && !avaitDejaUnSceau; premier = false; avaitDejaUnSceau = true; return r; }
       });
       defisEl.appendChild(defis[p.defi].el);
@@ -326,7 +328,9 @@
     afficherDefi(p, o);
     roue(m.roue);
     majBarre(p.ci);
-    bSuivant.hidden = i === PAS.length - 1;
+    // à la dernière étape, la flèche descend au bilan
+    var dernier = i === PAS.length - 1;
+    bSuivant.setAttribute('aria-label', dernier ? C.ui.voirBilan : C.ui.passageSuivant); bSuivant.title = dernier ? C.ui.voirBilan : '';
     if (pret && !revision) Progres.pas(p.id);
   }
 
@@ -345,14 +349,21 @@
     if (lenis) lenis.scrollTo(y, { duration: vite ? 1.6 : 1.1, easing: function (t) { return 1 - Math.pow(1 - t, 3); } });
     else window.scrollTo(0, y);
   }
-  bSuivant.onclick = function () { allerA(courant + 1); };
+  // après la dernière étape vient le bilan, qui n'est pas une étape : la flèche et le clavier y descendent
+  function allerAuBilan() {
+    var y = bilan.getBoundingClientRect().top + window.scrollY;
+    if (lenis) lenis.scrollTo(y, { duration: 1.6, easing: function (t) { return 1 - Math.pow(1 - t, 3); } });
+    else window.scrollTo(0, y);
+  }
+  function allerSuivant() { if (courant >= PAS.length - 1) allerAuBilan(); else allerA(courant + 1); }
+  bSuivant.onclick = allerSuivant;
   document.addEventListener('keydown', function (e) {
     var t = e.target, saisie = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
     if (tutoOuvert) { gererClavierTuto(e); return; }
     if (saisie || e.metaKey || e.ctrlKey || e.altKey) return;
     if (document.body.classList.contains('au-bilan') || !accueilEl.hidden) return;
     var sur = t && t.tagName === 'BUTTON';
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !sur)) { e.preventDefault(); allerA(courant + 1); }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !sur)) { e.preventDefault(); allerSuivant(); }
     else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); allerA(courant - 1); }
   });
 

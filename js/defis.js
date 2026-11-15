@@ -46,7 +46,10 @@
       ui.corps.innerHTML = '<div class="reussite"><div class="cire" aria-hidden="true">' + (ctx.numero || '★') + '</div><div>' +
         '<p class="reussite__titre">' + U.sceau + '</p><p class="reussite__txt">' + fmt(d.bravo) + '</p>' +
         (ctx.premierSceau() ? '<p class="reussite__suite">' + fmt(U.sceauPremier) + '</p>' : '') +
-        '<p class="reussite__suite">' + fmt(U.continuer) + '</p></div></div>';
+        '<p class="reussite__suite">' + fmt(ctx.apres ? ctx.apres.texte : U.continuer) + '</p>' +
+        (ctx.apres ? '<button type="button" class="btn reussite__apres">' + ctx.apres.bouton + '</button>' : '') + '</div></div>';
+      var bApres = ui.corps.querySelector('.reussite__apres');
+      if (bApres) { bApres.onclick = ctx.apres.aller; setTimeout(function () { try { bApres.focus({ preventScroll: true }); } catch (e) { /* rien */ } }, 30); }
       if (window.gsap && !ctx.reduit) {
         window.gsap.fromTo(ui.corps.querySelector('.cire'), { scale: 2.6, rotation: -28, opacity: 0 }, { scale: 1, rotation: -6, opacity: 1, duration: 0.7, ease: 'back.out(1.6)' });
         window.gsap.from(ui.corps.querySelectorAll('.reussite p'), { y: 16, opacity: 0, duration: 0.6, stagger: 0.09, delay: 0.25, ease: 'power3.out' });
